@@ -351,6 +351,202 @@
     .modal-loader-box { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 22px 28px; border-radius: 20px; background: rgba(255,255,255,0.96); box-shadow: 0 12px 30px rgba(99,102,241,0.18); }
     .modal-loader-text { font-size: 15px; font-weight: 700; color: #374151; }
 
+    /* ============================================================
+       Visual refresh 2026 — modern glass / aurora / 3D-touch
+       ============================================================ */
+    :root {
+      --ink: #0b1220;
+      --glass-bg: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.85);
+      --shadow-float: 0 24px 60px -24px rgba(15, 23, 42, 0.28);
+      --primary-gradient: linear-gradient(135deg, #fb7185 0%, #a855f7 55%, #6366f1 100%);
+    }
+
+    body { background-color: #f6f7fb; position: relative; overflow-x: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -25%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(244, 63, 94, 0.20), transparent 42%),
+        radial-gradient(circle at 82% 12%, rgba(139, 92, 246, 0.22), transparent 40%),
+        radial-gradient(circle at 72% 86%, rgba(16, 185, 129, 0.16), transparent 44%),
+        radial-gradient(circle at 12% 82%, rgba(59, 130, 246, 0.16), transparent 42%);
+      filter: blur(24px);
+      animation: auroraDrift 20s ease-in-out infinite alternate;
+    }
+    @keyframes auroraDrift {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(-3%, 2%, 0) scale(1.06); }
+      100% { transform: translate3d(2%, -2%, 0) scale(1.02); }
+    }
+    #appPublicHistory, #appLogin, #appDashboard, #appAdminDashboard { position: relative; z-index: 1; }
+
+    ::selection { background: rgba(168, 85, 247, 0.25); }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #f9a8d4, #a78bfa); border-radius: 99px; border: 2px solid #f6f7fb; }
+
+    /* Brand logo */
+    .brand-logo { position: relative; overflow: hidden; }
+    .logo-img { display: none; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 5px; border-radius: inherit; }
+    .brand-logo.has-logo .brand-icon { display: none; }
+    .brand-logo.has-logo .logo-img { display: block; }
+    .brand-logo.has-logo { background: #fff !important; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12); }
+
+    /* Public hero */
+    .public-header {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-float);
+      backdrop-filter: blur(18px) saturate(140%);
+    }
+    .public-header::after {
+      content: '';
+      position: absolute; left: 24px; right: 24px; top: 0; height: 3px;
+      border-radius: 0 0 6px 6px;
+      background: var(--primary-gradient);
+      opacity: 0.9;
+    }
+    .public-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .school-text h1 { letter-spacing: -0.3px; }
+
+    .btn-scan {
+      border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 22px; border-radius: 999px; font-size: 0.95rem; font-weight: 800; color: #fff;
+      background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 55%, #8b5cf6 100%);
+      box-shadow: 0 12px 26px -8px rgba(79, 70, 229, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    .btn-scan:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 18px 34px -10px rgba(79, 70, 229, 0.65); }
+    .btn-scan:active { transform: translateY(0) scale(0.98); }
+
+    /* Glass cards */
+    .admin-table-container, .action-panel, .left-card, .chart-card, .type-card {
+      border: 1px solid rgba(255,255,255,0.9) !important;
+      box-shadow: var(--shadow-float) !important;
+      backdrop-filter: blur(16px) saturate(140%);
+      background: rgba(255,255,255,0.82) !important;
+    }
+    .admin-table-container { border-radius: 22px !important; }
+    .admin-table th { background: linear-gradient(180deg, #f8fafc, #eef2f7) !important; letter-spacing: 0.1px; }
+    .admin-table tr:hover td { background: #f5f3ff !important; }
+
+    /* Clock + buttons */
+    .clock-section {
+      background: linear-gradient(120deg, #fb7185, #a855f7, #6366f1, #f43f5e) !important;
+      background-size: 280% 280% !important;
+      animation: clockFlow 14s ease infinite;
+    }
+    @keyframes clockFlow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    .time-display { letter-spacing: -2px; }
+
+    .btn-main, .save-config-btn { position: relative; overflow: hidden; }
+    .btn-main::after, .btn-scan::after, .save-config-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 32%, rgba(255,255,255,0.35) 48%, transparent 64%);
+      transform: translateX(-120%); transition: transform 0.7s ease;
+    }
+    .btn-main:hover::after, .btn-scan:hover::after, .save-config-btn:hover::after { transform: translateX(120%); }
+
+    .action-btn { border: 1px solid rgba(255,255,255,0.18); }
+    .action-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
+      transform: translateX(-120%); transition: transform 0.7s ease; pointer-events: none;
+    }
+    .action-btn:hover::after { transform: translateX(120%); }
+    .action-icon { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 8px 18px rgba(0,0,0,0.18); }
+
+    /* Face enrollment banner */
+    .face-enroll-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+      padding: 16px 18px; margin-bottom: 22px; border-radius: 18px;
+      background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(139,92,246,0.14));
+      border: 1px solid rgba(99,102,241,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+    .face-enroll-banner .fe-title { display: flex; align-items: center; gap: 12px; font-weight: 800; color: #312e81; }
+    .face-enroll-banner .fe-title i { color: #4f46e5; }
+    .face-enroll-banner .fe-sub { font-size: 0.82rem; font-weight: 600; color: #6366f1; margin-top: 3px; }
+    .btn-face-enroll {
+      border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 20px; border-radius: 14px; font-weight: 800; font-size: 0.92rem; color: #fff;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #ec4899 100%);
+      box-shadow: 0 12px 24px -10px rgba(99,102,241,0.75);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .btn-face-enroll:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+    /* Face modal */
+    .face-stage {
+      position: relative; width: 100%; aspect-ratio: 4 / 3; max-height: 44vh; border-radius: 20px; overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #1e293b, #020617);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+    }
+    .face-stage video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+    .face-stage .face-guide {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .face-stage .face-guide .oval {
+      width: 46%; aspect-ratio: 3 / 4; border-radius: 50%;
+      border: 3px dashed rgba(255,255,255,0.6);
+      box-shadow: 0 0 0 9999px rgba(2,6,23,0.35);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .face-stage.scanning .face-guide .oval { border-color: #34d399; box-shadow: 0 0 0 9999px rgba(2,6,23,0.45), 0 0 30px rgba(52,211,153,0.6); }
+    .face-stage .face-scanline {
+      position: absolute; left: 8%; right: 8%; height: 3px; top: 18%; border-radius: 4px;
+      background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+      box-shadow: 0 0 14px rgba(34,211,238,0.8);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .face-stage.scanning .face-scanline { opacity: 1; animation: scanLine 1.8s ease-in-out infinite; }
+    @keyframes scanLine { 0%,100% { top: 18%; } 50% { top: 76%; } }
+    .face-status {
+      margin: 14px 0 4px; padding: 12px 14px; border-radius: 12px; font-weight: 700; font-size: 0.92rem;
+      background: #f1f5f9; color: #475569; text-align: center;
+    }
+    .face-status.ok { background: #ecfdf5; color: #047857; }
+    .face-status.err { background: #fef2f2; color: #b91c1c; }
+    .face-status.busy { background: #eef2ff; color: #4338ca; }
+    .face-progress { display: flex; justify-content: center; gap: 8px; margin: 12px 0 4px; }
+    .face-dot { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; transition: all 0.25s ease; }
+    .face-dot.on { background: linear-gradient(135deg, #6366f1, #ec4899); transform: scale(1.25); box-shadow: 0 0 0 4px rgba(139,92,246,0.16); }
+    .face-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .face-actions .btn-main, .face-actions .btn-scan { flex: 1 1 160px; justify-content: center; padding: 14px 18px; }
+    .face-note { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 8px; }
+
+    /* Logo uploader (admin config) */
+    .logo-uploader { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
+    .logo-preview {
+      width: 76px; height: 76px; border-radius: 18px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff; border: 2px dashed #c7d2fe; color: #6366f1; overflow: hidden;
+    }
+    .logo-preview .logo-img { padding: 6px; }
+    .logo-uploader .logo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-soft {
+      border: 1px solid #c7d2fe; background: #eef2ff; color: #4338ca; cursor: pointer;
+      padding: 9px 14px; border-radius: 10px; font-weight: 800; font-size: 0.82rem;
+      display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+    }
+    .btn-soft:hover { background: #e0e7ff; transform: translateY(-1px); }
+
+    /* Admin chrome */
+    .admin-sidebar { background: rgba(255,255,255,0.82) !important; backdrop-filter: blur(18px) saturate(150%); }
+    .admin-header-title h1 { letter-spacing: -0.4px; }
+    .stat-card { box-shadow: 0 18px 34px -18px rgba(15,23,42,0.5) !important; }
+    .stat-card:hover { transform: translateY(-3px); }
+    .menu-item.active { background: linear-gradient(90deg, rgba(244,63,94,0.12), rgba(139,92,246,0.12)); }
+
+    @media print {
+      body::before { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -363,15 +559,20 @@
     <div class="container">
       <div class="public-header">
         <div class="school-info">
-          <div class="school-logo" style="background:var(--primary-gradient);"><i data-lucide="clock" size="22"></i></div>
+          <div class="school-logo brand-logo" style="background:var(--primary-gradient);"><i data-lucide="clock" size="22" class="brand-icon"></i><img class="logo-img" alt="โลโก้โรงเรียน"></div>
           <div class="school-text">
             <h1 id="publicOrgDisplay">ระบบลงเวลาปฏิบัติงาน</h1>
             <p id="publicDateText">รายการลงเวลาล่าสุดของวันนี้</p>
           </div>
         </div>
-        <button onclick="showLogin()" class="btn-main" style="width: auto; padding: 12px 24px; font-size: 0.95rem; border-radius: 50px;">
-          <i data-lucide="log-in" size="18"></i> เข้าสู่ระบบ / ลงเวลา
-        </button>
+        <div class="public-actions">
+          <button onclick="openFaceClock()" class="btn-scan" type="button">
+            <i data-lucide="scan-face" size="19"></i> สแกนหน้าลงเวลา
+          </button>
+          <button onclick="showLogin()" class="btn-main" style="width: auto; padding: 12px 24px; font-size: 0.95rem; border-radius: 50px;">
+            <i data-lucide="log-in" size="18"></i> เข้าสู่ระบบ / ลงเวลา
+          </button>
+        </div>
       </div>
       
       <div class="admin-table-container">
@@ -405,7 +606,7 @@
     <div class="login-card">
       <div class="back-to-public" onclick="showPublicHistory()"><i data-lucide="arrow-left" size="16"></i> กลับหน้ารายการ</div>
       <div class="login-header">
-        <div class="icon-bg"><i data-lucide="fingerprint" size="32"></i></div>
+        <div class="icon-bg brand-logo"><i data-lucide="fingerprint" size="32" class="brand-icon"></i><img class="logo-img" alt="โลโก้โรงเรียน"></div>
         <h2>เข้าสู่ระบบ</h2>
         <p>ระบบลงเวลาปฏิบัติงานออนไลน์</p>
         <p id="loginOrgText">บุคลากรโรงเรียนบ้านรามัน</p>
@@ -429,7 +630,7 @@
     <header class="app-header">
       <div class="container header-flex">
         <div class="school-info">
-          <div class="school-logo"><i data-lucide="school" size="20"></i></div>
+          <div class="school-logo brand-logo"><i data-lucide="school" size="20" class="brand-icon"></i><img class="logo-img" alt="โลโก้โรงเรียน"></div>
           <div class="school-text"><h1 id="orgDisplay">ระบบลงเวลาปฏิบัติงาน</h1><p>ระบบลงเวลาออนไลน์</p></div>
         </div>
         <div class="user-pill" onclick="logout()"><img id="headerImg" src="" class="user-avatar-small" alt="U"><span id="headerName">ผู้ใช้งาน</span><i data-lucide="log-out" size="14" style="color:var(--warning); margin-left:5px;"></i></div>
@@ -469,6 +670,16 @@
         <section class="right-section">
           <div class="action-panel">
             <div class="panel-title"><div class="icon-bg"><i data-lucide="clipboard-check" size="22"></i></div> บันทึกเวลาปฏิบัติงาน</div>
+
+            <div class="face-enroll-banner">
+              <div>
+                <div class="fe-title"><i data-lucide="scan-face" size="20"></i> ลงทะเบียนใบหน้า</div>
+                <div class="fe-sub" id="faceEnrollStatus">ยังไม่ได้บันทึกใบหน้า (ต้องบันทึก 5 รูป)</div>
+              </div>
+              <button type="button" class="btn-face-enroll" onclick="openFaceEnroll()">
+                <i data-lucide="camera" size="17"></i> สแกนใบหน้า
+              </button>
+            </div>
             
             <div class="action-btn in" onclick="handleSave('IN')">
               <div class="action-left"><div class="action-icon"><i data-lucide="log-in" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">ลงเวลามา</h4><div class="action-subtitle"><i data-lucide="clock" size="14"></i> บันทึกเวลาเริ่มต้นงาน</div></div></div>
@@ -521,8 +732,9 @@
       <aside class="admin-sidebar">
         <div class="sidebar-header">
           <div class="logo">
-            <div class="icon-bg">
-              <i data-lucide="shield"></i>
+            <div class="icon-bg brand-logo">
+              <i data-lucide="shield" class="brand-icon"></i>
+              <img class="logo-img" alt="โลโก้โรงเรียน">
             </div>
             <span class="logo-text">Admin<span>Panel</span></span>
           </div>
@@ -639,6 +851,12 @@
               <h2><i data-lucide="list-checks" style="color:var(--primary);"></i> รายชื่อผู้ลงเวลาประจำวัน</h2>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span class="type-filter-chip" id="typeFilterChip" onclick="toggleTypeFilter(null)" title="คลิกเพื่อล้างตัวกรอง"></span>
+                <select id="adminPrintType" class="input-box" style="padding: 10px 14px; width: auto; font-weight: 700; font-family: 'Sarabun', sans-serif;" title="เลือกประเภทบุคลากรสำหรับพิมพ์">
+                  <option value="">ทุกประเภท</option>
+                  <option value="ข้าราชการ">ข้าราชการ</option>
+                  <option value="พนักงานราชการ">พนักงานราชการ</option>
+                  <option value="ลูกจ้าง">ลูกจ้าง</option>
+                </select>
                 <button onclick="printDailyTable()" class="btn-main" style="padding: 10px 16px; width: auto; display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="printer" size="16"></i> พิมพ์ข้อมูล</button>
               </div>
             </div>
@@ -791,6 +1009,16 @@
               <div class="reg-group"><label class="input-label">ละติจูด (Lat)</label><input type="text" id="inputLat" class="input-box" placeholder="18.7883" onchange="updateConfigMapMarker()"></div>
               <div class="reg-group"><label class="input-label">ลองจิจูด (Lng)</label><input type="text" id="inputLng" class="input-box" placeholder="98.9853" onchange="updateConfigMapMarker()"></div>
             </div>
+            <div class="config-section-title"><i data-lucide="image" size="18"></i> โลโก้โรงเรียน</div>
+            <div class="logo-uploader" style="margin-bottom: 18px;">
+              <div class="logo-preview" id="configLogoPreview"><i data-lucide="school" size="26"></i></div>
+              <div style="flex:1; min-width: 150px;">
+                <input type="file" id="configLogoFile" accept="image/*" style="display:none;" onchange="onLogoFileChange(event)">
+                <button type="button" class="btn-soft" onclick="document.getElementById('configLogoFile').click()"><i data-lucide="upload" size="15"></i> เลือกไฟล์โลโก้</button>
+                <button type="button" class="btn-soft" onclick="removeSchoolLogo()" style="margin-left:6px;"><i data-lucide="trash-2" size="15"></i> ลบโลโก้</button>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;" id="configLogoHint">PNG / JPG ขนาดไม่เกิน 2 MB</div>
+              </div>
+            </div>
             <button type="button" onclick="saveSystemConfigFromModal()" class="save-config-btn">
               <i data-lucide="save"></i> บันทึกการตั้งค่า
             </button>
@@ -883,11 +1111,58 @@
     </div>
   </div>
 
+  <!-- Modal: สแกนหน้าลงเวลา (หน้าแรก) -->
+  <div class="modal-overlay" id="faceClockModal">
+    <div class="modal-content register-modal-content" style="max-width: 540px; position: relative;">
+      <div class="modal-header">
+        <h2><i data-lucide="scan-face"></i> สแกนหน้าลงเวลามา</h2>
+        <i data-lucide="x" onclick="closeFaceClock()"></i>
+      </div>
+      <div class="modal-body">
+        <div class="face-stage" id="faceClockStage">
+          <video id="faceClockVideo" autoplay muted playsinline></video>
+          <div class="face-guide"><div class="oval"></div></div>
+          <div class="face-scanline"></div>
+        </div>
+        <div class="face-status" id="faceClockStatus">กดปุ่ม “เริ่มสแกน” เพื่อเปิดกล้องและจดจำใบหน้า</div>
+        <div class="face-actions">
+          <button type="button" class="btn-scan" id="faceClockScanBtn" onclick="startFaceClockScan()"><i data-lucide="scan-face" size="18"></i> เริ่มสแกน</button>
+          <button type="button" class="btn-soft" onclick="closeFaceClock()" style="justify-content:center;"><i data-lucide="x" size="16"></i> ปิด</button>
+        </div>
+        <div class="face-note">ระบบจะลงเวลา “มาทำงาน” อัตโนมัติเมื่อจดจำใบหน้าได้ และตรวจสอบพิกัดพื้นที่โรงเรียนก่อนบันทึก</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: ลงทะเบียนใบหน้า 5 รูป -->
+  <div class="modal-overlay" id="faceEnrollModal">
+    <div class="modal-content register-modal-content" style="max-width: 540px; position: relative;">
+      <div class="modal-header">
+        <h2><i data-lucide="user-round-check"></i> ลงทะเบียนใบหน้า</h2>
+        <i data-lucide="x" onclick="closeFaceEnroll()"></i>
+      </div>
+      <div class="modal-body">
+        <div class="face-stage" id="faceEnrollStage">
+          <video id="faceEnrollVideo" autoplay muted playsinline></video>
+          <div class="face-guide"><div class="oval"></div></div>
+          <div class="face-scanline"></div>
+        </div>
+        <div class="face-progress" id="faceEnrollDots"></div>
+        <div class="face-status" id="faceEnrollModalStatus">ต้องเก็บภาพใบหน้าให้ครบ 5 รูป กดเริ่มสแกนแล้วขยับใบหน้าเบา ๆ</div>
+        <div class="face-actions">
+          <button type="button" class="btn-scan" id="faceEnrollStartBtn" onclick="startFaceEnroll()"><i data-lucide="camera" size="18"></i> เริ่มสแกนใบหน้า</button>
+          <button type="button" class="btn-main" id="faceEnrollSaveBtn" onclick="submitFaceEnroll()" style="display:none;"><i data-lucide="save" size="18"></i> บันทึกใบหน้า</button>
+        </div>
+        <div class="face-note" id="faceEnrollNote">รูปและข้อมูลใบหน้าจะถูกเก็บใน Google Drive ตามชื่อ-นามสกุลของคุณ</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // 📌 ตั้งค่า URL Web App จาก Google Apps Script ของคุณที่นี่
     // ==========================================
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPo4kO-3jA_ea8AQeALX5gOzdX0GGBXHBIVyxAdixiBd5Daj9202y1d-t52mpQh5I/exec'; // <-- แก้ไขเป็น URL ของคุณ
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw9u7kTL3QSvp3tNIHLfhCz5JUOcVU2Alwgktwzo2NU7MLeosGd8tvQYKlddwYYcYJZ/exec'; // <-- แก้ไขเป็น URL ของคุณ
     
     // ==========================================
     // Core API Wrapper (ทดแทน google.script.run)
@@ -948,6 +1223,7 @@
           document.getElementById('publicOrgDisplay').innerText = data.orgName || 'ระบบลงเวลาปฏิบัติงาน';
           document.getElementById('thaiDateText').innerText = data.todayThai;
           document.getElementById('publicDateText').innerText = 'ข้อมูลประจำ' + data.todayThai;
+          applySchoolLogo(data.logoUrl || '');
         })
         .catch(err => console.error("โหลดข้อมูลเบื้องต้นล้มเหลว", err));
     };
@@ -1407,6 +1683,7 @@
 
       document.getElementById('inputLateTime').value = safeLateTime; document.getElementById('inputEarlyTime').value = safeEarlyTime;
       document.getElementById('inputLat').value = safeLat; document.getElementById('inputLng').value = safeLng; document.getElementById('inputRadius').value = safeRadius;
+      applySchoolLogo(sysConfig.logoUrl || '');
       document.getElementById('adminConfigModal').style.display = 'flex';
 
       setTimeout(() => {
@@ -1521,7 +1798,7 @@
       document.getElementById('profileImg').src = currentUser && currentUser.img ? currentUser.img : defaultAvatar;
       document.getElementById('profileName').innerText = safeName;
       document.getElementById('profileDept').innerText = ((currentUser && (currentUser.position || '-')) || '-') + ' • ' + ((currentUser && (currentUser.dept || currentUser.department || '-')) || '-');
-      getLocation(); loadUserStatus();
+      getLocation(); loadUserStatus(); refreshFaceEnrollStatus();
     }
 
     function logout() {
@@ -1822,7 +2099,35 @@
       printWindow.document.open(); printWindow.document.write(html); printWindow.document.close(); 
       printWindow.onload = () => { setTimeout(() => { printWindow.focus(); printWindow.print(); printWindow.close(); }, 500); }; 
     }
-    function printDailyTable() { const title = document.getElementById('adminReportTitle')?.innerText?.trim() || 'รายงานภาพรวมรายวัน'; const tableHtml = document.querySelector('#adminViewDashboard .admin-table-container:last-child')?.innerHTML || ''; openPrintWindow(buildPrintHtml(title, tableHtml)); }
+    function dailyPrintNote(log) {
+      if (log.leave && log.leave !== '-') return 'ลา: ' + log.leave;
+      if (log.official && log.official !== '-') return 'ไปราชการ: ' + log.official;
+      if (log.out_school && log.out_school !== '-') return 'นอกสถานที่: ' + log.out_school;
+      if (log.lateReport && log.lateReport !== '-') return 'แจ้งเข้าสาย ' + log.lateReport;
+      return '-';
+    }
+    function buildDailyPrintTable(logs) {
+      let rows = '';
+      if (!logs.length) {
+        rows = '<tr><td colspan="7" style="text-align:center;">ไม่พบข้อมูล</td></tr>';
+      } else {
+        logs.forEach(function (log, index) {
+          const timeIn = log.timeIn && log.timeIn !== '-' ? log.timeIn + (log.isLate ? ' (สาย)' : '') : '--:--';
+          const timeOut = log.timeOut && log.timeOut !== '-' ? log.timeOut + (log.isEarly ? ' (ก่อน)' : '') : '--:--';
+          rows += '<tr><td>' + (index + 1) + '</td><td style="text-align:left;">' + escapeHtml(log.uid) + '</td><td style="text-align:left;">' + escapeHtml(log.name) + '</td><td>' + escapeHtml(log.type || 'ไม่ระบุ') + '</td><td>' + escapeHtml(timeIn) + '</td><td>' + escapeHtml(timeOut) + '</td><td style="text-align:left;">' + escapeHtml(dailyPrintNote(log)) + '</td></tr>';
+        });
+      }
+      return '<table><thead><tr><th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>ประเภท</th><th>เวลามา (IN)</th><th>เวลากลับ (OUT)</th><th>ลา / ไปราชการ / หมายเหตุ</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+    function printDailyTable() {
+      const select = document.getElementById('adminPrintType');
+      const type = select ? select.value : '';
+      const allLogs = (lastAdminSummary && lastAdminSummary.logs) ? lastAdminSummary.logs : [];
+      const logs = type ? allLogs.filter(function (l) { return (l.type || 'ไม่ระบุ') === type; }) : allLogs;
+      const dateText = document.getElementById('adminReportTitle')?.innerText?.trim() || 'รายงานภาพรวมรายวัน';
+      const title = dateText + (type ? ' • ' + type : '');
+      openPrintWindow(buildPrintHtml(title, buildDailyPrintTable(logs)));
+    }
     function printSummaryTable() { const title = document.getElementById('adminMonthTitle')?.innerText?.trim() || 'รายงานสรุปรายบุคคล'; const tableHtml = document.querySelector('#adminViewSummary .admin-table-container:last-child')?.innerHTML || ''; openPrintWindow(buildPrintHtml(title, tableHtml)); }
 
     let editBase64ImageString = ""; let editImageMimeType = ""; let editImageFileName = "";
@@ -1875,6 +2180,352 @@
           } else { Swal.fire('ผิดพลาด', res.message, 'error'); }
         })
         .catch(function(err) { showEditModalLoader(false); Swal.fire('ผิดพลาด', err.message || 'เกิดข้อผิดพลาดในการบันทึก', 'error'); });
+    }
+    // ==========================================
+    // โลโก้โรงเรียน
+    // ==========================================
+    function applySchoolLogo(url) {
+      sysConfig.logoUrl = url || '';
+      document.querySelectorAll('.brand-logo').forEach(function (box) {
+        const img = box.querySelector('.logo-img');
+        if (!img) return;
+        if (url) { img.src = url; img.style.display = 'block'; box.classList.add('has-logo'); }
+        else { img.removeAttribute('src'); img.style.display = 'none'; box.classList.remove('has-logo'); }
+      });
+      const preview = document.getElementById('configLogoPreview');
+      if (preview) {
+        preview.innerHTML = url
+          ? '<img src="' + url + '" class="logo-img" alt="โลโก้โรงเรียน" style="width:100%;height:100%;object-fit:contain;display:block;">'
+          : '<i data-lucide="school" size="26"></i>';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function onLogoFileChange(e) {
+      const input = e && e.target;
+      const file = input && input.files ? input.files[0] : null;
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        Swal.fire('ไฟล์ใหญ่เกินไป', 'กรุณาเลือกไฟล์ขนาดไม่เกิน 2 MB', 'warning');
+        input.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const result = String((ev.target && ev.target.result) || '');
+        const comma = result.indexOf(',');
+        const base64 = comma >= 0 ? result.slice(comma + 1) : result;
+        Swal.fire({ title: 'กำลังอัปโหลดโลโก้...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+        fetchAPI('saveSchoolLogo', {
+          imageBase64: base64,
+          mimeType: file.type || 'image/png',
+          fileName: file.name || ('school_logo_' + Date.now() + '.png')
+        }).then(function (res) {
+          if (res && res.ok && res.logoUrl) {
+            applySchoolLogo(res.logoUrl);
+            Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message || 'บันทึกโลโก้โรงเรียนเรียบร้อยแล้ว' });
+          } else {
+            Swal.fire('ผิดพลาด', (res && res.message) || 'ไม่สามารถบันทึกโลโก้ได้', 'error');
+          }
+        }).catch(function (err) {
+          Swal.fire('ผิดพลาด', (err && err.message) || 'ไม่สามารถอัปโหลดโลโก้ได้', 'error');
+        });
+      };
+      reader.onerror = function () { Swal.fire('ผิดพลาด', 'ไม่สามารถอ่านไฟล์รูปภาพได้', 'error'); };
+      reader.readAsDataURL(file);
+      input.value = '';
+    }
+
+    function removeSchoolLogo() {
+      Swal.fire({ title: 'ลบโลโก้โรงเรียน?', icon: 'warning', showCancelButton: true, confirmButtonText: 'ลบโลโก้', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f43f5e' })
+        .then(function (r) {
+          if (!r.isConfirmed) return;
+          fetchAPI('removeSchoolLogo', {})
+            .then(function (res) {
+              if (res && res.ok) { applySchoolLogo(''); Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message || 'ลบโลโก้แล้ว' }); }
+              else { Swal.fire('ผิดพลาด', (res && res.message) || 'ไม่สามารถลบโลโก้ได้', 'error'); }
+            })
+            .catch(function (err) { Swal.fire('ผิดพลาด', (err && err.message) || 'ไม่สามารถลบโลโก้ได้', 'error'); });
+        });
+    }
+
+    // ==========================================
+    // สแกนใบหน้า (ลงเวลามา / ลงทะเบียน 5 รูป)
+    // ==========================================
+    const FACE_API_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.js';
+    const FACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model';
+    let faceApiPromise = null;
+    let faceStreams = { clock: null, enroll: null };
+    let faceClockBusy = false;
+    let faceEnrollBusy = false;
+    let faceEnrollShots = [];
+
+    function sleep(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
+    function loadFaceApi() {
+      if (window.faceapi) return Promise.resolve(window.faceapi);
+      if (faceApiPromise) return faceApiPromise;
+      faceApiPromise = new Promise(function (resolve, reject) {
+        const script = document.createElement('script');
+        script.src = FACE_API_URL;
+        script.async = true;
+        script.onload = function () {
+          const faceapi = window.faceapi;
+          if (!faceapi) { reject(new Error('โหลดไลบรารีสแกนใบหน้าไม่สำเร็จ')); return; }
+          Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL),
+            faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL)
+          ]).then(function () { resolve(faceapi); }).catch(function () {
+            reject(new Error('ดาวน์โหลดโมเดลใบหน้าไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต'));
+          });
+        };
+        script.onerror = function () { reject(new Error('เชื่อมต่อไลบรารีสแกนใบหน้าไม่ได้')); };
+        document.head.appendChild(script);
+      });
+      return faceApiPromise;
+    }
+
+    async function openFaceCamera(videoEl) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('อุปกรณ์นี้ไม่รองรับกล้อง หรือหน้าเว็บไม่ได้เปิดผ่าน HTTPS');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      });
+      videoEl.srcObject = stream;
+      try { await videoEl.play(); } catch (e) {}
+      return stream;
+    }
+
+    function stopFaceStream(key) {
+      const stream = faceStreams[key];
+      if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); faceStreams[key] = null; }
+      const video = document.getElementById(key === 'clock' ? 'faceClockVideo' : 'faceEnrollVideo');
+      if (video) video.srcObject = null;
+    }
+
+    async function detectDescriptor(videoEl) {
+      if (!window.faceapi) return null;
+      const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 });
+      const result = await faceapi.detectSingleFace(videoEl, options).withFaceLandmarks().withFaceDescriptor();
+      return result ? Array.from(result.descriptor) : null;
+    }
+
+    async function detectDescriptorWithRetry(videoEl, tries) {
+      for (let i = 0; i < tries; i++) {
+        const descriptor = await detectDescriptor(videoEl);
+        if (descriptor) return descriptor;
+        await sleep(400);
+      }
+      return null;
+    }
+
+    function captureFaceImage(videoEl) {
+      const width = videoEl.videoWidth || 640;
+      const height = videoEl.videoHeight || 480;
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(videoEl, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const comma = dataUrl.indexOf(',');
+      return comma >= 0 ? dataUrl.slice(comma + 1) : '';
+    }
+
+    function getGeoCoords() {
+      return new Promise(function (resolve, reject) {
+        if (!navigator.geolocation) { reject(new Error('อุปกรณ์นี้ไม่รองรับ GPS')); return; }
+        navigator.geolocation.getCurrentPosition(
+          function (pos) { resolve(pos.coords); },
+          function () { reject(new Error('ไม่สามารถดึงพิกัด GPS ได้ กรุณาเปิด GPS และอนุญาตการเข้าถึงตำแหน่ง')); },
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        );
+      });
+    }
+
+    function setFaceStatus(id, text, cls) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'face-status' + (cls ? ' ' + cls : '');
+    }
+
+    function openFaceClock() {
+      document.getElementById('faceClockModal').style.display = 'flex';
+      setFaceStatus('faceClockStatus', 'กดปุ่ม “เริ่มสแกน” เพื่อเปิดกล้องและจดจำใบหน้า');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeFaceClock() {
+      stopFaceStream('clock');
+      faceClockBusy = false;
+      document.getElementById('faceClockStage').classList.remove('scanning');
+      document.getElementById('faceClockModal').style.display = 'none';
+    }
+
+    async function startFaceClockScan() {
+      if (faceClockBusy) return;
+      faceClockBusy = true;
+      const stage = document.getElementById('faceClockStage');
+      const button = document.getElementById('faceClockScanBtn');
+      if (button) button.disabled = true;
+      try {
+        setFaceStatus('faceClockStatus', 'กำลังโหลดระบบจดจำใบหน้า...', 'busy');
+        await loadFaceApi();
+        if (!faceStreams.clock) faceStreams.clock = await openFaceCamera(document.getElementById('faceClockVideo'));
+        stage.classList.add('scanning');
+        setFaceStatus('faceClockStatus', 'กำลังจดจำใบหน้า กรุณามองที่กล้อง...', 'busy');
+        const descriptor = await detectDescriptorWithRetry(document.getElementById('faceClockVideo'), 8);
+        if (!descriptor) throw new Error('ไม่พบใบหน้าในกล้อง กรุณาอยู่ในที่แสงสว่างและมองที่กล้อง');
+        setFaceStatus('faceClockStatus', 'กำลังตรวจสอบพิกัดและบันทึกเวลา...', 'busy');
+        const coords = await getGeoCoords();
+        const res = await fetchAPI('recognizeFace', { descriptor: descriptor, lat: coords.latitude, lng: coords.longitude });
+        if (res && res.ok) {
+          setFaceStatus('faceClockStatus', res.message || 'ลงเวลามาสำเร็จ', 'ok');
+          Swal.fire({ icon: 'success', title: 'ลงเวลาสำเร็จ', text: res.message || 'ลงเวลามาเรียบร้อยแล้ว', timer: 2200, showConfirmButton: false });
+          loadPublicHistory();
+          if (currentUser && res.user && String(res.user.id) === String(currentUser.id)) fetchLatestData();
+        } else {
+          setFaceStatus('faceClockStatus', (res && res.message) || 'ไม่สามารถลงเวลาได้', 'err');
+          Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: (res && res.message) || 'ไม่สามารถลงเวลาได้' });
+        }
+      } catch (err) {
+        const message = (err && err.message) ? err.message : 'เกิดข้อผิดพลาด';
+        setFaceStatus('faceClockStatus', message, 'err');
+        Swal.fire({ icon: 'error', title: 'สแกนไม่สำเร็จ', text: message });
+      } finally {
+        stage.classList.remove('scanning');
+        if (button) button.disabled = false;
+        faceClockBusy = false;
+      }
+    }
+
+    function refreshFaceEnrollStatus() {
+      const el = document.getElementById('faceEnrollStatus');
+      if (!el) return;
+      if (!currentUser) { el.innerText = 'กรุณาเข้าสู่ระบบก่อนลงทะเบียนใบหน้า'; return; }
+      const needed = sysConfig.facePhotoCount || 5;
+      fetchAPI('getFaceStatus', { uid: currentUser.id })
+        .then(function (res) {
+          if (res && res.ok && res.count >= needed) {
+            el.innerText = 'บันทึกใบหน้าแล้ว ' + res.count + '/' + needed + ' รูป' + (res.updatedAt ? ' • ' + res.updatedAt : '');
+          } else if (res && res.ok && res.count > 0) {
+            el.innerText = 'บันทึกใบหน้าแล้ว ' + res.count + '/' + needed + ' รูป (ยังไม่ครบ)';
+          } else {
+            el.innerText = 'ยังไม่ได้บันทึกใบหน้า (ต้องบันทึก ' + needed + ' รูป)';
+          }
+        })
+        .catch(function () {});
+    }
+
+    function renderEnrollDots() {
+      const box = document.getElementById('faceEnrollDots');
+      if (!box) return;
+      const needed = sysConfig.facePhotoCount || 5;
+      let html = '';
+      for (let i = 0; i < needed; i++) html += '<span class="face-dot' + (i < faceEnrollShots.length ? ' on' : '') + '"></span>';
+      box.innerHTML = html;
+    }
+
+    function openFaceEnroll() {
+      if (!currentUser) { Swal.fire('กรุณาเข้าสู่ระบบ', 'กรุณาเข้าสู่ระบบก่อนลงทะเบียนใบหน้า', 'warning'); return; }
+      faceEnrollShots = [];
+      const needed = sysConfig.facePhotoCount || 5;
+      document.getElementById('faceEnrollStartBtn').style.display = '';
+      document.getElementById('faceEnrollSaveBtn').style.display = 'none';
+      document.getElementById('faceEnrollModal').style.display = 'flex';
+      setFaceStatus('faceEnrollModalStatus', 'ต้องเก็บภาพใบหน้าให้ครบ ' + needed + ' รูป กดเริ่มสแกนแล้วขยับใบหน้าเบา ๆ');
+      renderEnrollDots();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeFaceEnroll() {
+      stopFaceStream('enroll');
+      faceEnrollBusy = false;
+      document.getElementById('faceEnrollStage').classList.remove('scanning');
+      document.getElementById('faceEnrollModal').style.display = 'none';
+    }
+
+    async function startFaceEnroll() {
+      if (faceEnrollBusy) return;
+      if (!currentUser) { Swal.fire('กรุณาเข้าสู่ระบบ', 'กรุณาเข้าสู่ระบบก่อนลงทะเบียนใบหน้า', 'warning'); return; }
+      faceEnrollBusy = true;
+      faceEnrollShots = [];
+      renderEnrollDots();
+      const needed = sysConfig.facePhotoCount || 5;
+      const stage = document.getElementById('faceEnrollStage');
+      const startBtn = document.getElementById('faceEnrollStartBtn');
+      const saveBtn = document.getElementById('faceEnrollSaveBtn');
+      startBtn.disabled = true;
+      saveBtn.style.display = 'none';
+      try {
+        setFaceStatus('faceEnrollModalStatus', 'กำลังโหลดระบบจดจำใบหน้า...', 'busy');
+        await loadFaceApi();
+        if (!faceStreams.enroll) faceStreams.enroll = await openFaceCamera(document.getElementById('faceEnrollVideo'));
+        stage.classList.add('scanning');
+        const video = document.getElementById('faceEnrollVideo');
+        let attempts = 0;
+        while (faceEnrollShots.length < needed && attempts < needed * 10) {
+          attempts++;
+          setFaceStatus('faceEnrollModalStatus', 'เก็บภาพที่ ' + (faceEnrollShots.length + 1) + '/' + needed + ' กรุณาขยับใบหน้าเล็กน้อย', 'busy');
+          const descriptor = await detectDescriptor(video);
+          if (descriptor) {
+            const last = faceEnrollShots.length ? faceEnrollShots[faceEnrollShots.length - 1].descriptor : null;
+            let tooSimilar = false;
+            if (last) {
+              let sum = 0;
+              for (let i = 0; i < descriptor.length; i++) { const d = descriptor[i] - last[i]; sum += d * d; }
+              tooSimilar = Math.sqrt(sum) < 0.02;
+            }
+            if (!tooSimilar) {
+              faceEnrollShots.push({ descriptor: descriptor, imageBase64: captureFaceImage(video) });
+              renderEnrollDots();
+            }
+            await sleep(700);
+          } else {
+            await sleep(500);
+          }
+        }
+        if (faceEnrollShots.length < needed) throw new Error('สแกนใบหน้าได้ไม่ครบ ' + needed + ' รูป กรุณาลองใหม่ในที่แสงสว่าง');
+        setFaceStatus('faceEnrollModalStatus', 'เก็บครบ ' + needed + ' รูปแล้ว กด “บันทึกใบหน้า” เพื่ออัปโหลด', 'ok');
+        saveBtn.style.display = '';
+      } catch (err) {
+        const message = (err && err.message) ? err.message : 'เกิดข้อผิดพลาด';
+        setFaceStatus('faceEnrollModalStatus', message, 'err');
+        Swal.fire({ icon: 'error', title: 'สแกนไม่สำเร็จ', text: message });
+      } finally {
+        stage.classList.remove('scanning');
+        startBtn.disabled = false;
+        faceEnrollBusy = false;
+      }
+    }
+
+    async function submitFaceEnroll() {
+      if (!currentUser) return;
+      const needed = sysConfig.facePhotoCount || 5;
+      if (faceEnrollShots.length < needed) { Swal.fire('ยังไม่ครบ', 'ต้องสแกนใบหน้าให้ครบ ' + needed + ' รูปก่อนบันทึก', 'warning'); return; }
+      const saveBtn = document.getElementById('faceEnrollSaveBtn');
+      saveBtn.disabled = true;
+      setFaceStatus('faceEnrollModalStatus', 'กำลังบันทึกใบหน้าและอัปโหลดรูป...', 'busy');
+      try {
+        const res = await fetchAPI('saveFaceData', {
+          uid: currentUser.id,
+          name: currentUser.name,
+          descriptors: faceEnrollShots.map(function (s) { return s.descriptor; }),
+          images: faceEnrollShots.map(function (s) { return { base64: s.imageBase64, mimeType: 'image/jpeg' }; })
+        });
+        if (!res || !res.ok) throw new Error((res && res.message) || 'บันทึกใบหน้าไม่สำเร็จ');
+        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message || 'บันทึกใบหน้าเรียบร้อยแล้ว' });
+        closeFaceEnroll();
+        refreshFaceEnrollStatus();
+      } catch (err) {
+        const message = (err && err.message) ? err.message : 'เกิดข้อผิดพลาด';
+        setFaceStatus('faceEnrollModalStatus', message, 'err');
+        Swal.fire('ผิดพลาด', message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+      }
     }
   </script>
 </body>
