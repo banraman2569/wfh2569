@@ -1945,19 +1945,33 @@
       if (badgeLate && !badgeLate.classList.contains('empty')) return Swal.fire({ title: 'แจ้งเข้าสายแล้ว', text: 'วันนี้คุณได้แจ้งเข้าสายไปแล้วครับ', icon: 'info', confirmButtonColor: '#f43f5e' });
       if (!userCoords) { getLocation(); return Swal.fire({ title: 'ไม่พบตำแหน่ง GPS', text: 'กรุณาเปิด GPS กดปุ่มรีเฟรช และรอสัญญาณสักครู่', icon: 'warning', confirmButtonColor: '#f43f5e' }); }
 
-      const now = new Date();
-      const timeText = now.toLocaleTimeString('en-GB', { hour12: false }).slice(0, 5);
       Swal.fire({
-        title: 'ยืนยันแจ้งเข้าสาย?',
-        html: `ระบบจะบันทึกเวลา <b>${timeText} น.</b> พร้อมพิกัดปัจจุบัน และแจ้งเตือนเข้ากลุ่มบุคลากรทุกคน<br><br><span style="font-size:0.85rem; color:#64748b;">เมื่อถึงโรงเรียนแล้ว กรุณากด "ลงเวลามา" ภายในพื้นที่ที่กำหนด</span>`,
-        icon: 'question', showCancelButton: true, confirmButtonColor: '#be123c',
-        confirmButtonText: 'แจ้งเข้าสาย', cancelButtonText: 'ยกเลิก', reverseButtons: true
+        title: 'แจ้งเข้าสาย',
+        html: `
+          <div style="text-align:left; font-size:0.92rem;">
+            <label style="font-weight:700; display:block; margin-bottom:6px;">เหตุการณ์เข้าสาย <span style="color:#e11d48;">*</span></label>
+            <textarea id="swal-late-reason" class="swal2-textarea" placeholder="ระบุสาเหตุที่เข้าสาย เช่น รถติด / ธุระครอบครัว" style="width:100%; margin:0 0 14px 0;"></textarea>
+            <label style="font-weight:700; display:block; margin-bottom:6px;">คาดว่าเข้าโรงเรียนประมาณกี่โมง <span style="color:#e11d48;">*</span></label>
+            <input id="swal-late-eta" type="time" class="swal2-input" style="width:100%; margin:0 0 10px 0;">
+            <div style="font-size:0.85rem; color:#64748b;">เมื่อถึงโรงเรียนแล้ว กรุณากด "ลงเวลามา" ภายในพื้นที่ที่กำหนด</div>
+          </div>
+        `,
+        showCancelButton: true, confirmButtonColor: '#be123c',
+        confirmButtonText: 'แจ้งเข้าสาย', cancelButtonText: 'ยกเลิก',
+        preConfirm: () => {
+          const reason = String((document.getElementById('swal-late-reason').value || '')).trim();
+          const eta = document.getElementById('swal-late-eta').value;
+          if (!reason) { Swal.showValidationMessage('กรุณากรอกเหตุการณ์เข้าสาย'); return false; }
+          if (!eta) { Swal.showValidationMessage('กรุณาระบุเวลาที่คาดว่าจะเข้าโรงเรียน'); return false; }
+          return { reason: reason, eta: eta };
+        }
       }).then(function(result) {
         if (!result.isConfirmed) return;
         Swal.fire({ title: 'กำลังบันทึกและแจ้งเตือน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         fetchAPI('saveAttendance', {
           employeeId: currentUser.id, employeeName: currentUser.name, action: 'LATE',
-          lat: userCoords.latitude, lng: userCoords.longitude, note: 'แจ้งเข้าสาย'
+          lat: userCoords.latitude, lng: userCoords.longitude,
+          note: 'เหตุการณ์เข้าสาย: ' + result.value.reason + ' | คาดว่าจะถึงโรงเรียน: ' + result.value.eta + ' น.'
         }).then(function(res) {
           if (res && res.ok === false) return Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: res.message || 'ไม่สามารถบันทึกได้', confirmButtonColor: '#f43f5e' });
           Swal.fire({ icon: 'success', title: 'แจ้งเข้าสายสำเร็จ', text: res.message || 'แจ้งเตือนเข้ากลุ่มเรียบร้อยแล้ว', timer: 2200, showConfirmButton: false });
@@ -1998,8 +2012,28 @@
       if (badgeOfficial && !badgeOfficial.classList.contains('empty')) { return Swal.fire({ title: 'บันทึกแล้ว', text: 'วันนี้คุณได้บันทึกการไปราชการไว้แล้วครับ', icon: 'info', confirmButtonColor: '#7c3aed' }); }
       if (badgeLeave && !badgeLeave.classList.contains('empty')) { return Swal.fire({ title: 'ไม่สามารถบันทึกไปราชการได้', text: 'วันนี้คุณได้แจ้งลาหยุดไว้แล้ว หากต้องการเปลี่ยนสถานะ กรุณาให้ผู้ดูแลยกเลิกการลาก่อน', icon: 'warning', confirmButtonColor: '#7c3aed' }); }
 
-      Swal.fire({ title: 'บันทึกไปราชการ', input: 'textarea', inputLabel: 'รายละเอียดการไปราชการ', inputPlaceholder: 'โปรดระบุ...1.เรื่อง... 2.สถานที่...', showCancelButton: true, confirmButtonText: 'ยืนยันการไปราชการ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#7c3aed', inputValidator: (value) => { if (!String(value || '').trim()) return 'กรุณาระบุรายละเอียดการไปราชการ'; }
-      }).then((result) => { if (result.isConfirmed) { submitOfficialAction(String(result.value || '').trim()); } });
+      Swal.fire({
+        title: 'บันทึกไปราชการ',
+        html: `
+          <div style="text-align:left; font-size:0.92rem;">
+            <label style="font-weight:700; display:block; margin-bottom:6px;">เรื่องที่อบรม/ประชุม <span style="color:#e11d48;">*</span></label>
+            <textarea id="swal-official-topic" class="swal2-textarea" placeholder="ระบุเรื่องที่อบรม/ประชุม" style="width:100%; margin:0 0 14px 0;"></textarea>
+            <label style="font-weight:700; display:block; margin-bottom:6px;">สถานที่ <span style="color:#e11d48;">*</span></label>
+            <input id="swal-official-place" type="text" class="swal2-input" placeholder="ระบุสถานที่จัดอบรม/ประชุม" style="width:100%; margin:0;">
+          </div>
+        `,
+        showCancelButton: true, confirmButtonColor: '#7c3aed',
+        confirmButtonText: 'ยืนยันการไปราชการ', cancelButtonText: 'ยกเลิก',
+        preConfirm: () => {
+          const topic = String((document.getElementById('swal-official-topic').value || '')).trim();
+          const place = String((document.getElementById('swal-official-place').value || '')).trim();
+          if (!topic) { Swal.showValidationMessage('กรุณากรอกเรื่องที่อบรม/ประชุม'); return false; }
+          if (!place) { Swal.showValidationMessage('กรุณากรอกสถานที่'); return false; }
+          return { topic: topic, place: place };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) { submitOfficialAction('เรื่องที่อบรม/ประชุม: ' + result.value.topic + ' | สถานที่: ' + result.value.place); }
+      });
     }
 
     function submitOfficialAction(detail) {
