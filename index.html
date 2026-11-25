@@ -184,8 +184,20 @@
     .action-btn.official .status-badge { color: #6d28d9; font-family: 'Sarabun'; }
     .action-btn.outschool { background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); }
     .action-btn.outschool .status-badge { color: #0f766e; font-family: 'Sarabun'; }
+    .action-btn.approve { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
+    .action-btn.approve .status-badge { color: #1e40af; font-family: 'Sarabun'; }
     .action-btn.latereport { background: linear-gradient(135deg, #fb7185 0%, #be123c 100%); }
     .action-btn.latereport .status-badge { color: #be123c; font-family: 'Sarabun'; }
+
+    /* แผงอนุมัติออกนอกบริเวณ (สำหรับผู้บริหาร rm1, rm2) */
+    .approver-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(8px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .approver-overlay.show { display: flex; }
+    .approver-card { background: #fff; border-radius: 20px; width: 100%; max-width: 1080px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; }
+    .approver-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid #e2e8f0; }
+    .approver-head h2 { font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; gap: 8px; align-items: center; }
+    .approver-close { background: #f1f5f9; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; color: #475569; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .approver-tools { display: flex; gap: 10px; padding: 14px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; flex-wrap: wrap; }
+    .approver-body { padding: 18px 22px 22px; overflow: auto; }
 
     /* ADMIN DASHBOARD */
     .admin-layout { display: flex; min-height: 100vh; background: transparent; position: relative; }
@@ -788,6 +800,11 @@
               <div class="action-left"><div class="action-icon"><i data-lucide="map" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">ขออนุญาตออกนอกบริเวณโรงเรียน</h4><div class="action-subtitle"><i data-lucide="file-text" size="14"></i> ระบุเหตุผลและผู้แทน</div></div></div>
               <div class="status-badge empty" id="statusBadgeOutschool"><i data-lucide="edit-3" size="18"></i> <span>กรอกข้อมูล</span></div>
             </div>
+
+            <div class="action-btn approve" id="approveOutPermissionBtn" style="display:none;" onclick="openApproverPanel()">
+              <div class="action-left"><div class="action-icon"><i data-lucide="file-signature" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">อนุมัติออกนอกบริเวณ</h4><div class="action-subtitle"><i data-lucide="shield-check" size="14"></i> สำหรับผู้บริหาร (rm1, rm2)</div></div></div>
+              <div class="status-badge" style="background:#e0f2fe; color:#0369a1;"><i data-lucide="chevron-right" size="18"></i></div>
+            </div>
           </div>
 
           <div>
@@ -800,6 +817,27 @@
         <i data-lucide="code" size="14"></i> พัฒนาโดย : มุสตามัน คิดมัตรามัน
       </div>
     </main>
+
+    <div id="approverPanel" class="approver-overlay" onclick="if (event.target === this) closeApproverPanel();">
+      <div class="approver-card">
+        <div class="approver-head">
+          <h2><i data-lucide="file-signature" style="color:#0f766e;"></i> อนุมัติออกนอกบริเวณโรงเรียน</h2>
+          <button class="approver-close" onclick="closeApproverPanel()" title="ปิด"><i data-lucide="x" size="18"></i></button>
+        </div>
+        <div class="approver-tools">
+          <button onclick="printOutPermissionDocs()" style="background:#0f766e; color:#fff; border:none; padding:10px 15px; border-radius:10px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="printer" size="16"></i> พิมพ์เอกสาร A4</button>
+          <button onclick="loadOutPermissions()" style="background:#fff; color:#0f172a; border:1px solid #cbd5e1; padding:10px 15px; border-radius:10px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="refresh-cw" size="16"></i> โหลดข้อมูลใหม่</button>
+        </div>
+        <div class="approver-body">
+          <div style="overflow-x:auto;">
+            <table class="admin-table" style="min-width:880px;">
+              <thead><tr><th style="width:50px;">ลำดับ</th><th>เลขที่ / วัน-เวลาแจ้ง</th><th>ผู้ขอ</th><th>เวลาออก</th><th>รายการ / ผู้ปฏิบัติงานแทน</th><th>สถานะ</th><th>ผู้พิจารณา / ความคิดเห็น</th><th style="width:130px;">จัดการ</th></tr></thead>
+              <tbody id="approverPermissionBody"><tr><td colspan="8" style="text-align:center; color:var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- หน้า 4: หน้า Admin -->
@@ -1310,6 +1348,8 @@
 
     let lastAdminSummary = null;
     let outPermissionRecords = [];
+    const OUT_APPROVER_IDS = ['rm1', 'rm2'];
+    function canApproveOutPermission() { return !!currentUser && OUT_APPROVER_IDS.indexOf(String(currentUser.id || '').trim().toLowerCase()) !== -1; }
     let currentTypeFilter = null;
     const TYPE_CARDS = [
       { type: 'ข้าราชการ', card: 'typeCardCivil', count: 'typeCountCivil', brk: 'typeBreakCivil' },
@@ -1327,6 +1367,7 @@
       document.getElementById('appLogin').style.display = 'none';
       document.getElementById('appPublicHistory').style.display = 'block';
       loadPublicHistory();
+      if (new URLSearchParams(window.location.search).get('login') === '1') showLogin();
       
       fetchAPI('getInitialData')
         .then(function(data) {
@@ -1916,12 +1957,12 @@
       document.getElementById('profileImg').src = currentUser && currentUser.img ? currentUser.img : defaultAvatar;
       document.getElementById('profileName').innerText = safeName;
       document.getElementById('profileDept').innerText = ((currentUser && (currentUser.position || '-')) || '-') + ' • ' + ((currentUser && (currentUser.dept || currentUser.department || '-')) || '-');
-      getLocation(); loadUserStatus(); refreshFaceEnrollStatus();
+      getLocation(); loadUserStatus(); refreshFaceEnrollStatus(); updateOutApproverUi();
     }
 
     function logout() {
       Swal.fire({ title: 'ยืนยันการออกจากระบบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#f43f5e', cancelButtonColor: '#cbd5e1', confirmButtonText: 'ใช่, ออกจากระบบ', cancelButtonText: 'ยกเลิก'
-      }).then(function(res) { if(res.isConfirmed) { if(refreshInterval) clearInterval(refreshInterval); currentUser = null; document.getElementById('loginPass').value = ''; document.getElementById('mapContainer').style.display = 'none'; document.getElementById('mapIframe').src = ''; document.getElementById('appDashboard').style.display = 'none'; showPublicHistory(); } });
+      }).then(function(res) { if(res.isConfirmed) { if(refreshInterval) clearInterval(refreshInterval); closeApproverPanel(); currentUser = null; document.getElementById('loginPass').value = ''; document.getElementById('mapContainer').style.display = 'none'; document.getElementById('mapIframe').src = ''; document.getElementById('appDashboard').style.display = 'none'; updateOutApproverUi(); showPublicHistory(); } });
     }
 
     function updateActionCards(timeIn, timeOut, leaveNote, officialNote, lateNote) {
@@ -2246,47 +2287,77 @@
     }
 
     // ---------- ฝั่ง Admin: รายการคำขอ / เสนอผู้บริหาร / เอกสาร A4 ----------
+    function outPermissionBodies_() {
+      return ['adminPermissionBody', 'approverPermissionBody']
+        .map(function (id) { return document.getElementById(id); })
+        .filter(function (el) { return !!el; });
+    }
+
     function loadOutPermissions() {
-      const body = document.getElementById('adminPermissionBody');
-      if (body) body.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;"><div class="spinner" style="margin:0 auto; width:30px; height:30px; border-width:3px;"></div></td></tr>';
+      const bodies = outPermissionBodies_();
+      bodies.forEach(function (b) { b.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;"><div class="spinner" style="margin:0 auto; width:30px; height:30px; border-width:3px;"></div></td></tr>'; });
       fetchAPI('getOutPermissions', {})
         .then(function (res) {
           outPermissionRecords = (res && res.records) ? res.records : [];
           renderOutPermissionTable();
         })
         .catch(function (err) {
-          if (body) body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</td></tr>';
+          bodies.forEach(function (b) { b.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</td></tr>'; });
         });
     }
 
     function renderOutPermissionTable() {
-      const body = document.getElementById('adminPermissionBody');
-      if (!body) return;
-      if (!outPermissionRecords.length) {
-        body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ยังไม่มีคำขอออกนอกบริเวณ</td></tr>';
-        return;
-      }
+      const bodies = outPermissionBodies_();
+      if (!bodies.length) return;
       let html = '';
-      outPermissionRecords.forEach(function (r, i) {
-        const action = r.status === 'รออนุมัติ'
-          ? '<button onclick="openOutPermissionReview(\'' + r.id + '\')" style="background:#0f766e; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="send" size="12"></i> เสนอผู้บริหาร</button>'
-          : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAt || '-') + '</span>';
-        const approver = r.status === 'รออนุมัติ'
-          ? '-'
-          : escapeHtml(r.approverPosition || '-') + (r.approverName ? '<br><span style="color:#475569;">' + escapeHtml(r.approverName) + '</span>' : '') + (r.comment ? '<br><span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>' : '');
-        html += '<tr>'
-          + '<td>' + (i + 1) + '</td>'
-          + '<td style="text-align:left; font-weight:700;">' + escapeHtml(r.id) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.at) + '</span></td>'
-          + '<td style="text-align:left;">' + escapeHtml(r.name) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.dept || r.position || '-') + '</span></td>'
-          + '<td>' + escapeHtml(r.timeOut) + ' น.</td>'
-          + '<td style="text-align:left; font-size:0.85rem;">' + escapeHtml(r.reason) + '<br><span style="color:#64748b; font-size:0.75rem;">ผู้แทน: ' + escapeHtml(r.substitute) + '</span></td>'
-          + '<td>' + permStatusBadge(r.status) + '</td>'
-          + '<td style="font-size:0.8rem;">' + approver + '</td>'
-          + '<td>' + action + '</td>'
-          + '</tr>';
-      });
-      body.innerHTML = html;
+      if (!outPermissionRecords.length) {
+        html = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ยังไม่มีคำขอออกนอกบริเวณ</td></tr>';
+      } else {
+        outPermissionRecords.forEach(function (r, i) {
+          const action = r.status === 'รออนุมัติ'
+            ? '<button onclick="openOutPermissionReview(\'' + r.id + '\')" style="background:#0f766e; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="send" size="12"></i> เสนอผู้บริหาร</button>'
+            : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAt || '-') + '</span>';
+          const approver = r.status === 'รออนุมัติ'
+            ? '-'
+            : escapeHtml(r.approverPosition || '-') + (r.approverName ? '<br><span style="color:#475569;">' + escapeHtml(r.approverName) + '</span>' : '') + (r.comment ? '<br><span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>' : '');
+          html += '<tr>'
+            + '<td>' + (i + 1) + '</td>'
+            + '<td style="text-align:left; font-weight:700;">' + escapeHtml(r.id) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.at) + '</span></td>'
+            + '<td style="text-align:left;">' + escapeHtml(r.name) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.dept || r.position || '-') + '</span></td>'
+            + '<td>' + escapeHtml(r.timeOut) + ' น.</td>'
+            + '<td style="text-align:left; font-size:0.85rem;">' + escapeHtml(r.reason) + '<br><span style="color:#64748b; font-size:0.75rem;">ผู้แทน: ' + escapeHtml(r.substitute) + '</span></td>'
+            + '<td>' + permStatusBadge(r.status) + '</td>'
+            + '<td style="font-size:0.8rem;">' + approver + '</td>'
+            + '<td>' + action + '</td>'
+            + '</tr>';
+        });
+      }
+      bodies.forEach(function (b) { b.innerHTML = html; });
       if (window.lucide) lucide.createIcons();
+    }
+
+    function updateOutApproverUi() {
+      const btn = document.getElementById('approveOutPermissionBtn');
+      if (btn) btn.style.display = canApproveOutPermission() ? 'flex' : 'none';
+      if (!canApproveOutPermission()) closeApproverPanel();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openApproverPanel() {
+      if (!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
+      if (!canApproveOutPermission()) return Swal.fire('ไม่มีสิทธิ์', 'บัญชีนี้ไม่มีสิทธิ์อนุมัติออกนอกบริเวณ', 'error');
+      const panel = document.getElementById('approverPanel');
+      if (!panel) return;
+      panel.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      loadOutPermissions();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeApproverPanel() {
+      const panel = document.getElementById('approverPanel');
+      if (panel) panel.classList.remove('show');
+      document.body.style.overflow = '';
     }
 
     function openOutPermissionReview(id) {
