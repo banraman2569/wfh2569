@@ -266,6 +266,17 @@
     .perm-history { max-height: 132px; overflow-y: auto; text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
     .perm-history-item { font-size: 0.78rem; color: #334155; display: flex; justify-content: space-between; gap: 8px; align-items: center; }
     .perm-history-item small { color: #64748b; }
+    .perm-history-title { font-size: 0.8rem; font-weight: 800; color: #475569; margin: 2px 0 6px; text-align: left; }
+    .perm-my-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+    .perm-my-stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 6px; text-align: center; }
+    .perm-my-stat b { display: block; font-size: 1.15rem; color: #0f766e; line-height: 1.2; }
+    .perm-my-stat span { font-size: 0.68rem; font-weight: 700; color: #64748b; }
+    .perm-print-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; background: #0f766e; color: #fff; border: none; border-radius: 8px; padding: 6px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer; font-family: 'Sarabun'; }
+    .perm-print-btn:disabled { opacity: 0.6; cursor: wait; }
+    .perm-print-status { font-size: 0.75rem; color: #b91c1c; font-weight: 700; min-height: 14px; margin-bottom: 4px; text-align: left; }
+    .perm-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .perm-stat-chip { display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; color: #334155; }
+    .perm-stat-chip b { color: #0f766e; font-size: 0.85rem; }
     .perm-form-label { display: block; text-align: left; font-weight: 700; font-size: 0.85rem; color: #334155; margin: 10px 0 4px; }
     .perm-form-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; font-family: 'Sarabun'; background: #fff; }
     .perm-form-input:focus { outline: none; border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.12); }
@@ -839,6 +850,7 @@
           <button onclick="loadOutPermissions()" style="background:#fff; color:#0f172a; border:1px solid #cbd5e1; padding:10px 15px; border-radius:10px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="refresh-cw" size="16"></i> โหลดข้อมูลใหม่</button>
         </div>
         <div class="approver-body">
+          <div class="perm-stats" id="approverPermStats"></div>
           <div style="overflow-x:auto;">
             <table class="admin-table" style="min-width:880px;">
               <thead><tr><th style="width:50px;">ลำดับ</th><th>เลขที่ / วัน-เวลาแจ้ง</th><th>ผู้ขอ</th><th>เวลาออก</th><th>รายการ / ผู้ปฏิบัติงานแทน</th><th>สถานะ</th><th>ผู้พิจารณา / ความคิดเห็น</th><th style="width:130px;">จัดการ</th></tr></thead>
@@ -1100,6 +1112,7 @@
             <div class="table-header">
               <h2><i data-lucide="file-signature" style="color:var(--primary);"></i> รายการคำขอออกนอกบริเวณ</h2>
             </div>
+            <div class="perm-stats" id="adminPermStats"></div>
             <div style="overflow-x: auto;">
               <table class="admin-table" style="min-width: 880px;">
                 <thead><tr><th style="width:50px;">ลำดับ</th><th>เลขที่ / วัน-เวลาแจ้ง</th><th>ผู้ขอ</th><th>เวลาออก</th><th>รายการ / ผู้ปฏิบัติงานแทน</th><th>สถานะ</th><th>ผู้พิจารณา / ความคิดเห็น</th><th style="width:130px;">จัดการ</th></tr></thead>
@@ -1358,6 +1371,8 @@
 
     let lastAdminSummary = null;
     let outPermissionRecords = [];
+    let outPermissionStats = null;
+    let outPermissionUserCounts = {};
     const OUT_APPROVER_IDS = ['rm1', 'rm2'];
     function canApproveOutPermission() { return !!currentUser && OUT_APPROVER_IDS.indexOf(String(currentUser.id || '').trim().toLowerCase()) !== -1; }
     let currentTypeFilter = null;
@@ -2206,33 +2221,78 @@
       return '<span class="perm-status pending"><i data-lucide="clock" size="12"></i> รออนุมัติ</span>';
     }
 
-    function buildMyPermissionHistoryHtml(records) {
-      if (!records || !records.length) return '';
-      let html = '<div style="font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:6px;">คำขอล่าสุดของฉัน</div><div class="perm-history">';
+    function buildMyPermissionHistoryHtml(records, stats) {
+      const st = stats || {};
+      let html = '<div class="perm-my-stats">'
+        + '<div class="perm-my-stat"><b>' + Number(st.total || 0) + '</b><span>ครั้งที่ขอทั้งหมด</span></div>'
+        + '<div class="perm-my-stat"><b>' + Number(st.approved || 0) + '</b><span>อนุญาต</span></div>'
+        + '<div class="perm-my-stat"><b>' + Number(st.rejected || 0) + '</b><span>ไม่อนุญาต</span></div>'
+        + '<div class="perm-my-stat"><b>' + Number(st.pending || 0) + '</b><span>รออนุมัติ</span></div>'
+        + '</div>';
+      if (!records || !records.length) {
+        return html + '<div class="perm-history-title">ยังไม่มีประวัติการขอออกนอกบริเวณ</div>';
+      }
+      html += '<div class="perm-history-title">ประวัติการขอออกนอกบริเวณ (กด "พิมพ์" เพื่อพิมพ์เอกสารย้อนหลังแต่ละครั้ง)</div>'
+        + '<div class="perm-history" style="max-height:190px;">';
       records.forEach(function (r) {
-        html += '<div class="perm-history-item"><span>' + escapeHtml(r.id) + ' • ' + escapeHtml(r.timeOut) + ' น. <small>(' + escapeHtml(r.dateText || r.at || '') + ')</small>'
-          + (r.comment ? '<br><small>ความคิดเห็นผู้บริหาร: ' + escapeHtml(r.comment) + '</small>' : '')
-          + '</span>' + permStatusBadge(r.status) + '</div>';
+        html += '<div class="perm-history-item">'
+          + '<div style="min-width:0;">'
+          + '<div><b>' + escapeHtml(r.id) + '</b> • ' + escapeHtml(r.timeOut) + ' น. วันที่ ' + escapeHtml(r.dateThai || r.dateText) + '</div>'
+          + '<div style="margin-top:3px;">' + permStatusBadge(r.status) + '</div>'
+          + '<small>' + escapeHtml(r.reason) + (r.comment ? ' • ความคิดเห็นผู้บริหาร: ' + escapeHtml(r.comment) : '') + '</small>'
+          + '</div>'
+          + '<button type="button" class="perm-print-btn" onclick="printMyOutPermissionDoc(\'' + escapeHtml(r.id) + '\', this)"><i data-lucide="printer" size="12"></i> พิมพ์</button>'
+          + '</div>';
       });
-      return html + '</div>';
+      return html + '</div><div id="permPrintStatus" class="perm-print-status"></div>';
+    }
+
+    function printMyOutPermissionDoc(id, btn) {
+      if (!currentUser) return;
+      const statusEl = document.getElementById('permPrintStatus');
+      const original = btn ? btn.innerHTML : '';
+      const printWindow = window.open('', '_blank', 'width=900,height=1200');
+      if (!printWindow) {
+        if (statusEl) statusEl.textContent = 'ไม่สามารถเปิดหน้าต่างพิมพ์ได้ กรุณาอนุญาต Pop-up ก่อน';
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.innerHTML = 'กำลังโหลด...'; }
+      if (statusEl) statusEl.textContent = '';
+      fetchAPI('getMyOutPermissionDoc', { id: id, uid: currentUser.id })
+        .then(function (res) {
+          if (btn) { btn.disabled = false; btn.innerHTML = original; }
+          if (window.lucide) lucide.createIcons();
+          if (!res || !res.ok || !res.record) {
+            try { printWindow.close(); } catch (e) {}
+            if (statusEl) statusEl.textContent = (res && res.message) || 'ไม่พบเอกสารที่ต้องการพิมพ์';
+            return;
+          }
+          openPrintWindow(buildOutPermissionDocsHtml([res.record]), printWindow);
+        })
+        .catch(function (err) {
+          if (btn) { btn.disabled = false; btn.innerHTML = original; }
+          if (window.lucide) lucide.createIcons();
+          try { printWindow.close(); } catch (e) {}
+          if (statusEl) statusEl.textContent = 'พิมพ์ไม่สำเร็จ: ' + (err && err.message ? err.message : String(err));
+        });
     }
 
     function handleLeaveSchool() {
       if (!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
       Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
       fetchAPI('getMyOutPermissions', { uid: currentUser.id })
-        .then(function (res) { openOutSchoolModal_(res && res.records ? res.records : []); })
-        .catch(function () { openOutSchoolModal_([]); });
+        .then(function (res) { openOutSchoolModal_(res && res.records ? res.records : [], res && res.stats ? res.stats : null); })
+        .catch(function () { openOutSchoolModal_([], null); });
     }
 
-    function openOutSchoolModal_(history) {
+    function openOutSchoolModal_(history, stats) {
       let pad = null;
       Swal.fire({
         title: 'ขออนุญาตออกนอกบริเวณโรงเรียน',
         width: '640px',
         html: `
           <div style="text-align:left; font-size:0.9rem;">
-            ${buildMyPermissionHistoryHtml(history)}
+            ${buildMyPermissionHistoryHtml(history, stats)}
             <label class="perm-form-label">เวลาออก</label>
             <input id="swal-time" type="time" class="perm-form-input">
             <label class="perm-form-label">รายการ / เหตุผล</label>
@@ -2309,11 +2369,31 @@
       fetchAPI('getOutPermissions', {})
         .then(function (res) {
           outPermissionRecords = (res && res.records) ? res.records : [];
+          outPermissionStats = (res && res.stats) ? res.stats : null;
+          outPermissionUserCounts = {};
+          ((res && res.userCounts) || []).forEach(function (c) { if (c.uid) outPermissionUserCounts[c.uid] = c; });
+          renderOutPermissionStats();
           renderOutPermissionTable();
         })
         .catch(function (err) {
           bodies.forEach(function (b) { b.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</td></tr>'; });
         });
+    }
+
+    function renderOutPermissionStats() {
+      const st = outPermissionStats || {};
+      let html = '<span class="perm-stat-chip"><i data-lucide="file-signature" size="13"></i> คำขอทั้งหมด <b>' + Number(st.total || 0) + '</b> ครั้ง</span>';
+      const counts = Object.keys(outPermissionUserCounts).map(function (k) { return outPermissionUserCounts[k]; })
+        .filter(function (c) { return c && c.total > 0; });
+      counts.forEach(function (c) {
+        html += '<span class="perm-stat-chip" title="อนุญาต ' + Number(c.approved || 0) + ' • ไม่อนุญาต ' + Number(c.rejected || 0) + ' • รออนุมัติ ' + Number(c.pending || 0) + '">'
+          + '<i data-lucide="user" size="13"></i> ' + escapeHtml(c.name || c.uid || '-') + ' <b>' + Number(c.total) + '</b> ครั้ง</span>';
+      });
+      ['adminPermStats', 'approverPermStats'].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+      });
+      if (window.lucide) lucide.createIcons();
     }
 
     function renderOutPermissionTable() {
@@ -2326,15 +2406,23 @@
         outPermissionRecords.forEach(function (r, i) {
           const action = r.status === 'รออนุมัติ'
             ? '<button onclick="openOutPermissionReview(\'' + r.id + '\')" style="background:#0f766e; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="send" size="12"></i> เสนอผู้บริหาร</button>'
-            : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAt || '-') + '</span>';
-          const approver = r.status === 'รออนุมัติ'
-            ? '-'
-            : escapeHtml(r.approverPosition || '-') + (r.approverName ? '<br><span style="color:#475569;">' + escapeHtml(r.approverName) + '</span>' : '') + (r.comment ? '<br><span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>' : '');
+            : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAtText || r.reviewedAt || '-') + '</span>';
+          const approverParts = [];
+          if (r.status !== 'รออนุมัติ') {
+            if (r.approverName) approverParts.push('<b>' + escapeHtml(r.approverName) + '</b>');
+            if (r.approverPosition) approverParts.push('<span style="color:#475569;">' + escapeHtml(r.approverPosition) + '</span>');
+            if (r.comment) approverParts.push('<span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>');
+          }
+          const approver = approverParts.length ? approverParts.join('<br>') : '-';
+          const count = outPermissionUserCounts[r.uid];
+          const countHtml = (count && count.total)
+            ? '<br><span style="font-size:0.72rem; color:#0f766e; font-weight:700;">ขอออกนอกบริเวณแล้ว ' + Number(count.total) + ' ครั้ง</span>'
+            : '';
           html += '<tr>'
             + '<td>' + (i + 1) + '</td>'
-            + '<td style="text-align:left; font-weight:700;">' + escapeHtml(r.id) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.at) + '</span></td>'
-            + '<td style="text-align:left;">' + escapeHtml(r.name) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.dept || r.position || '-') + '</span></td>'
-            + '<td>' + escapeHtml(r.timeOut) + ' น.</td>'
+            + '<td style="text-align:left; font-weight:700;">' + escapeHtml(r.id) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.at || '-') + '</span></td>'
+            + '<td style="text-align:left;">' + escapeHtml(r.name) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.dept || r.position || '-') + '</span>' + countHtml + '</td>'
+            + '<td>' + escapeHtml(r.timeOut) + ' น.<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">วันที่ ' + escapeHtml(r.dateThai || r.dateText) + '</span></td>'
             + '<td style="text-align:left; font-size:0.85rem;">' + escapeHtml(r.reason) + '<br><span style="color:#64748b; font-size:0.75rem;">ผู้แทน: ' + escapeHtml(r.substitute) + '</span></td>'
             + '<td>' + permStatusBadge(r.status) + '</td>'
             + '<td style="font-size:0.8rem;">' + approver + '</td>'
@@ -2383,7 +2471,7 @@
           <div style="text-align:left; font-size:0.9rem;">
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; font-size:0.85rem; color:#334155; margin-bottom:6px;">
               <div style="font-weight:800; margin-bottom:4px;">${escapeHtml(rec.id)} • ${escapeHtml(rec.name)}</div>
-              <div>เวลาออก: <b>${escapeHtml(rec.timeOut)} น.</b> • ${escapeHtml(rec.dateText)}</div>
+              <div>เวลาออก: <b>${escapeHtml(rec.timeOut)} น.</b> • วันที่ ${escapeHtml(rec.dateThai || rec.dateText)}</div>
               <div style="margin-top:4px;">รายการ: ${escapeHtml(rec.reason)}</div>
               <div style="color:#64748b; margin-top:2px;">ผู้ปฏิบัติงานแทน: ${escapeHtml(rec.substitute)}</div>
             </div>
@@ -2492,28 +2580,28 @@
           + '<div class="op-head">'
           + '<div class="op-school">' + school + '</div>'
           + '<div class="op-title">แบบขออนุญาตออกนอกบริเวณโรงเรียน</div>'
-          + '<div class="op-meta">เลขที่ ' + escapeHtml(r.id) + ' • วันที่ ' + escapeHtml(r.dateText) + '</div>'
+          + '<div class="op-meta">เลขที่ ' + escapeHtml(r.id) + ' • วันที่ ' + escapeHtml(r.dateThai || r.dateText) + '</div>'
           + '</div>'
           + '<table class="op-table">'
-          + '<tr><td class="op-lbl">ชื่อผู้ขอ</td><td>' + escapeHtml(r.name) + '</td><td class="op-lbl">ตำแหน่ง</td><td>' + escapeHtml(r.position || '-') + '</td></tr>'
-          + '<tr><td class="op-lbl">แผนก</td><td>' + escapeHtml(r.dept || '-') + '</td><td class="op-lbl">เวลาที่ขอออก</td><td>' + escapeHtml(r.timeOut) + ' น.</td></tr>'
-          + '<tr><td class="op-lbl">รายการ / เหตุผล</td><td colspan="3">' + escapeHtml(r.reason) + '</td></tr>'
-          + '<tr><td class="op-lbl">ผู้ปฏิบัติงานแทน</td><td colspan="3">' + escapeHtml(r.substitute) + '</td></tr>'
+          + '<tr><td class="op-lbl">ชื่อผู้ขอ</td><td class="op-val">' + escapeHtml(r.name) + '</td><td class="op-lbl">ตำแหน่ง</td><td class="op-val">' + escapeHtml(r.position || '-') + '</td></tr>'
+          + '<tr><td class="op-lbl">แผนก</td><td class="op-val">' + escapeHtml(r.dept || '-') + '</td><td class="op-lbl">เวลาที่ขอออก</td><td class="op-val">' + escapeHtml(r.timeOut) + ' น.</td></tr>'
+          + '<tr><td class="op-lbl">รายการ / เหตุผล</td><td colspan="3" class="op-val">' + escapeHtml(r.reason) + '</td></tr>'
+          + '<tr><td class="op-lbl">ผู้ปฏิบัติงานแทน</td><td colspan="3" class="op-val">' + escapeHtml(r.substitute) + '</td></tr>'
           + '</table>'
           + '<table class="op-sign-table"><tr>'
           + '<td class="op-sign-cell">'
           + '<div class="op-sign-title">ลงชื่อผู้ขออนุญาต</div>'
           + sig
-          + '<div class="op-sign-name">(' + escapeHtml(r.name) + ')</div>'
-          + '<div class="op-sign-date">แจ้งเมื่อ ' + escapeHtml(r.at) + '</div>'
+          + '<div class="op-sign-name op-val">(' + escapeHtml(r.name) + ')</div>'
+          + '<div class="op-sign-date op-val">แจ้งเมื่อ ' + escapeHtml(r.atText || r.at) + '</div>'
           + '</td>'
           + '<td class="op-sign-cell">'
           + '<div class="op-sign-title">ผลการพิจารณา: <span class="op-status ' + statusClass + '">' + escapeHtml(r.status) + '</span></div>'
-          + '<div class="op-comment">ความคิดเห็น: ' + escapeHtml(r.comment || '-') + '</div>'
+          + '<div class="op-comment op-val">ความคิดเห็น: ' + escapeHtml(r.comment || '-') + '</div>'
           + adminSig
-          + '<div class="op-sign-name">(' + escapeHtml(r.approverName || '-') + ')</div>'
-          + '<div class="op-sign-position">' + escapeHtml(r.approverPosition || '-') + '</div>'
-          + '<div class="op-sign-date">' + escapeHtml(r.reviewedAt || '') + '</div>'
+          + '<div class="op-sign-name op-val">(' + escapeHtml(r.approverName || '-') + ')</div>'
+          + '<div class="op-sign-position op-val">' + escapeHtml(r.approverPosition || '-') + '</div>'
+          + '<div class="op-sign-date op-val">' + escapeHtml(r.reviewedAtText || '') + '</div>'
           + '</td>'
           + '</tr></table>'
           + '</section>';
@@ -2540,6 +2628,8 @@
         + '.op-comment { min-height: 8mm; margin-bottom: 1mm; }'
         + '.op-status { font-weight: 700; }'
         + '.op-status.ok { color: #047857; } .op-status.no { color: #b91c1c; } .op-status.wait { color: #b45309; }'
+        + '.op-val { color: #1e3a8a; font-weight: 600; }'
+        + '.op-comment.op-val { color: #1e3a8a; }'
         + '@page { size: A4 portrait; margin: 8mm; }'
         + '@media print { body { padding: 0; } .op-doc { margin-bottom: 6mm; } }'
         + '</style></head><body>' + docs + '</body></html>';
@@ -2633,8 +2723,8 @@
     function escapeHtml(value) { return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
     function getPrintStyles() { return ` <style> @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap'); * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; } html, body { margin: 0; padding: 0; background: #ffffff; color: #111827; } body { padding: 12mm; } .print-page { width: 100%; } .print-title { margin: 0 0 10px 0; text-align: center; font-size: 20px; font-weight: 700; color: #111827; } table { width: 100% !important; border-collapse: collapse !important; table-layout: auto; font-size: 12px; } th, td { border: 1px solid #9ca3af; padding: 6px 8px; vertical-align: middle; word-break: break-word; } th { background: #f3f4f6; text-align: center; font-weight: 700; } td { text-align: center; background: #ffffff; } tr:nth-child(even) td { background: #fafafa; } th:nth-child(2), td:nth-child(2), th:nth-child(3), td:nth-child(3) { text-align: left; } .table-header, .print-btn, .btn-main, button, .no-print, .actions, .action-buttons { display: none !important; } .admin-table-container { overflow: visible !important; max-height: none !important; border:none; box-shadow:none; } @media print { html, body { width: 210mm; min-height: 297mm; } body { padding: 10mm; } @page { size: A4 portrait; margin: 10mm; } } </style> `; }
     function buildPrintHtml(title, tableHtml) { return ` <!DOCTYPE html> <html lang="th"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>${escapeHtml(title)}</title> ${getPrintStyles()} </head> <body> <div class="print-page"> <h1 class="print-title">${escapeHtml(title)}</h1> ${tableHtml || '<p style="text-align:center;">ไม่พบข้อมูล</p>'} </div> </body> </html> `; }
-    function openPrintWindow(html) { 
-      const printWindow = window.open('', '_blank', 'width=900,height=1200'); 
+    function openPrintWindow(html, preopenedWindow) { 
+      const printWindow = preopenedWindow || window.open('', '_blank', 'width=900,height=1200'); 
       if (!printWindow) { alert('ไม่สามารถเปิดหน้าต่างพิมพ์ได้ กรุณาอนุญาต Pop-up ก่อน'); return; } 
       printWindow.document.open(); printWindow.document.write(html); printWindow.document.close(); 
       printWindow.onload = () => { setTimeout(() => { printWindow.focus(); printWindow.print(); printWindow.close(); }, 500); }; 
