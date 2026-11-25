@@ -237,6 +237,29 @@
     .badge-type.officer { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
     .badge-type.none { background: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; }
 
+    /* คำขออนุญาตออกนอกบริเวณ: ลายเซ็น / สถานะ / ฟอร์ม */
+    .signature-box { margin-top: 6px; }
+    .signature-canvas { width: 100%; height: 150px; background: #fff; border: 2px dashed #cbd5e1; border-radius: 12px; touch-action: none; display: block; cursor: crosshair; }
+    .signature-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .signature-clear { background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; border-radius: 8px; padding: 5px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .signature-clear:hover { background: #e2e8f0; }
+    .perm-status { padding: 5px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .perm-status.pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .perm-status.approved { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .perm-status.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .perm-history { max-height: 132px; overflow-y: auto; text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .perm-history-item { font-size: 0.78rem; color: #334155; display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .perm-history-item small { color: #64748b; }
+    .perm-form-label { display: block; text-align: left; font-weight: 700; font-size: 0.85rem; color: #334155; margin: 10px 0 4px; }
+    .perm-form-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; font-family: 'Sarabun'; background: #fff; }
+    .perm-form-input:focus { outline: none; border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.12); }
+    .swal-perm-textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; font-family: 'Sarabun'; min-height: 70px; resize: vertical; }
+    .swal-perm-textarea:focus { outline: none; border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.12); }
+    .decision-options { display: flex; gap: 10px; }
+    .decision-option { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: #fff; color: #334155; }
+    .decision-option input { accent-color: #0f766e; }
+    .decision-option.is-checked { border-color: #0f766e; background: #f0fdfa; color: #0f766e; }
+
     .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
     .chart-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); padding: 20px; border-radius: var(--radius-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; align-items: center; }
     .chart-wrapper { width: 100%; height: 230px; position: relative; }
@@ -821,6 +844,11 @@
               </a>
             </li>
             <li>
+              <a id="menu-permission" class="menu-item" onclick="switchAdminMenu('permission')">
+                <i data-lucide="file-signature"></i> <span>อนุมัติออกนอกบริเวณ</span>
+              </a>
+            </li>
+            <li>
               <a class="menu-item" onclick="openAdminConfigModal()">
                 <i data-lucide="settings"></i> <span>ตั้งค่าระบบ</span>
               </a>
@@ -1001,6 +1029,33 @@
               <table class="admin-table">
                 <thead><tr><th>ลำดับ</th><th>รหัสผู้ใช้งาน</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง</th><th>แผนก</th><th>ประเภท</th><th>จัดการ</th></tr></thead>
                 <tbody id="adminUsersBody"><tr><td colspan="7" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminViewPermission" style="display: none;">
+          <div class="admin-header">
+            <div class="admin-header-title-wrapper">
+              <button class="mobile-menu-btn" onclick="toggleAdminSidebar()"><i data-lucide="menu"></i></button>
+              <div class="admin-header-title">
+                <h1>อนุมัติออกนอกบริเวณโรงเรียน</h1>
+                <p>พิจารณาคำขอและจัดเก็บเอกสารขนาด A4</p>
+              </div>
+            </div>
+            <div class="admin-header-actions">
+              <button onclick="printOutPermissionDocs()" class="btn-main" style="padding: 10px 15px; width: auto; background:#0f766e;"><i data-lucide="printer" size="16"></i> พิมพ์เอกสาร A4</button>
+              <button onclick="loadOutPermissions()" class="btn-main" style="padding: 10px 15px; width: auto;"><i data-lucide="refresh-cw" size="16"></i> โหลดข้อมูลใหม่</button>
+            </div>
+          </div>
+          <div class="admin-table-container">
+            <div class="table-header">
+              <h2><i data-lucide="file-signature" style="color:var(--primary);"></i> รายการคำขอออกนอกบริเวณ</h2>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="admin-table" style="min-width: 880px;">
+                <thead><tr><th style="width:50px;">ลำดับ</th><th>เลขที่ / วัน-เวลาแจ้ง</th><th>ผู้ขอ</th><th>เวลาออก</th><th>รายการ / ผู้ปฏิบัติงานแทน</th><th>สถานะ</th><th>ผู้พิจารณา / ความคิดเห็น</th><th style="width:130px;">จัดการ</th></tr></thead>
+                <tbody id="adminPermissionBody"><tr><td colspan="8" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -1254,6 +1309,7 @@
     let configMapObj = null; let configMarker = null; let configCircle = null;
 
     let lastAdminSummary = null;
+    let outPermissionRecords = [];
     let currentTypeFilter = null;
     const TYPE_CARDS = [
       { type: 'ข้าราชการ', card: 'typeCardCivil', count: 'typeCountCivil', brk: 'typeBreakCivil' },
@@ -1367,12 +1423,14 @@
       document.getElementById('menu-summary').classList.remove('active'); 
       document.getElementById('menu-map').classList.remove('active');
       document.getElementById('menu-users').classList.remove('active');
+      document.getElementById('menu-permission').classList.remove('active');
       document.getElementById('menu-logs').classList.remove('active');
 
       document.getElementById('adminViewDashboard').style.display = 'none'; 
       document.getElementById('adminViewSummary').style.display = 'none'; 
       document.getElementById('adminViewMap').style.display = 'none';
       document.getElementById('adminViewUsers').style.display = 'none';
+      document.getElementById('adminViewPermission').style.display = 'none';
       document.getElementById('adminViewLogs').style.display = 'none';
 
       if (window.innerWidth <= 900) {
@@ -1388,6 +1446,7 @@
         setTimeout(() => { adminMapObj.invalidateSize(); renderMapMarkers(currentLogsForMap); }, 300);
       } 
       else if (view === 'users') { document.getElementById('menu-users').classList.add('active'); document.getElementById('adminViewUsers').style.display = 'block'; loadAdminUsers(); } 
+      else if (view === 'permission') { document.getElementById('menu-permission').classList.add('active'); document.getElementById('adminViewPermission').style.display = 'block'; loadOutPermissions(); } 
       else if (view === 'logs') { document.getElementById('menu-logs').classList.add('active'); document.getElementById('adminViewLogs').style.display = 'block'; loadSystemLogs(); }
     }
 
@@ -2045,57 +2104,364 @@
         .catch(function(err) { Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error'); });
     }
     
+    // ==========================================
+    // คำขออนุญาตออกนอกบริเวณโรงเรียน (ลายเซ็นบนจอ + อนุมัติ + เอกสาร A4)
+    // ==========================================
+    function initSignaturePad(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return null;
+      const ctx = canvas.getContext('2d');
+      canvas.width = 640; canvas.height = 200;
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      let drawing = false, hasInk = false;
+
+      function pointFrom(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (e.clientX - rect.left) * (canvas.width / rect.width),
+          y: (e.clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+      canvas.addEventListener('pointerdown', function (e) {
+        e.preventDefault();
+        drawing = true;
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+        const p = pointFrom(e);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y);
+      });
+      canvas.addEventListener('pointermove', function (e) {
+        if (!drawing) return;
+        e.preventDefault();
+        const p = pointFrom(e);
+        ctx.lineTo(p.x, p.y); ctx.stroke();
+        hasInk = true;
+      });
+      function stopDrawing() { drawing = false; }
+      canvas.addEventListener('pointerup', stopDrawing);
+      canvas.addEventListener('pointercancel', stopDrawing);
+
+      return {
+        hasInk: function () { return hasInk; },
+        clear: function () { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); hasInk = false; },
+        toDataURL: function () { return canvas.toDataURL('image/jpeg', 0.55); }
+      };
+    }
+
+    function permStatusBadge(status) {
+      const s = String(status || '');
+      if (s === 'อนุญาต') return '<span class="perm-status approved"><i data-lucide="check-circle" size="12"></i> อนุญาต</span>';
+      if (s === 'ไม่อนุญาต') return '<span class="perm-status rejected"><i data-lucide="x-circle" size="12"></i> ไม่อนุญาต</span>';
+      return '<span class="perm-status pending"><i data-lucide="clock" size="12"></i> รออนุมัติ</span>';
+    }
+
+    function buildMyPermissionHistoryHtml(records) {
+      if (!records || !records.length) return '';
+      let html = '<div style="font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:6px;">คำขอล่าสุดของฉัน</div><div class="perm-history">';
+      records.forEach(function (r) {
+        html += '<div class="perm-history-item"><span>' + escapeHtml(r.id) + ' • ' + escapeHtml(r.timeOut) + ' น. <small>(' + escapeHtml(r.dateText || r.at || '') + ')</small>'
+          + (r.comment ? '<br><small>ความคิดเห็นผู้บริหาร: ' + escapeHtml(r.comment) + '</small>' : '')
+          + '</span>' + permStatusBadge(r.status) + '</div>';
+      });
+      return html + '</div>';
+    }
+
     function handleLeaveSchool() {
-      if(!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
-      
+      if (!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
+      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+      fetchAPI('getMyOutPermissions', { uid: currentUser.id })
+        .then(function (res) { openOutSchoolModal_(res && res.records ? res.records : []); })
+        .catch(function () { openOutSchoolModal_([]); });
+    }
+
+    function openOutSchoolModal_(history) {
+      let pad = null;
       Swal.fire({
         title: 'ขออนุญาตออกนอกบริเวณโรงเรียน',
+        width: '640px',
         html: `
           <div style="text-align:left; font-size:0.9rem;">
-            <label style="font-weight:700; display:block; margin-bottom:5px;">เวลาออก</label>
-            <input id="swal-time" type="time" class="swal2-input" style="width: 100%; margin:0 0 15px 0;">
-            <label style="font-weight:700; display:block; margin-bottom:5px;">รายการ / เหตุผล</label>
-            <textarea id="swal-reason" class="swal2-textarea" placeholder="ระบุเหตุผลในการออกนอกบริเวณ..." style="width: 100%; margin:0 0 15px 0;"></textarea>
-            <label style="font-weight:700; display:block; margin-bottom:5px;">ผู้ปฏิบัติงานแทน</label>
-            <input id="swal-substitute" type="text" class="swal2-input" placeholder="ชื่อผู้ปฏิบัติงานแทน..." style="width: 100%; margin:0;">
+            ${buildMyPermissionHistoryHtml(history)}
+            <label class="perm-form-label">เวลาออก</label>
+            <input id="swal-time" type="time" class="perm-form-input">
+            <label class="perm-form-label">รายการ / เหตุผล</label>
+            <textarea id="swal-reason" class="swal-perm-textarea" placeholder="ระบุเหตุผลในการออกนอกบริเวณ..."></textarea>
+            <label class="perm-form-label">ผู้ปฏิบัติงานแทน</label>
+            <input id="swal-substitute" type="text" class="perm-form-input" placeholder="ชื่อผู้ปฏิบัติงานแทน...">
+            <label class="perm-form-label">ลายเซ็นผู้ขอ <span style="color:#ef4444;">*</span></label>
+            <div class="signature-box">
+              <canvas id="swal-sign-canvas" class="signature-canvas"></canvas>
+              <div class="signature-tools"><span>เซ็นชื่อด้วยนิ้วหรือเมาส์ในกรอบ</span><button type="button" class="signature-clear" id="swal-sign-clear">ล้างลายเซ็น</button></div>
+            </div>
           </div>
         `,
         showCancelButton: true,
         confirmButtonText: 'ยืนยันและส่งแจ้งเตือน',
         cancelButtonText: 'ยกเลิก',
         confirmButtonColor: '#0f766e',
-        preConfirm: () => {
+        didOpen: function () {
+          if (window.lucide) lucide.createIcons();
+          pad = initSignaturePad('swal-sign-canvas');
+          const clearBtn = document.getElementById('swal-sign-clear');
+          if (clearBtn && pad) clearBtn.addEventListener('click', pad.clear);
+        },
+        preConfirm: function () {
           const timeOut = document.getElementById('swal-time').value;
-          const reason = document.getElementById('swal-reason').value;
-          const substitute = document.getElementById('swal-substitute').value;
-          if (!timeOut || !reason || !substitute) {
-            Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
-            return false;
-          }
-          return { timeOut: timeOut, reason: reason, substitute: substitute, name: currentUser.name, uid: currentUser.id };
+          const reason = document.getElementById('swal-reason').value.trim();
+          const substitute = document.getElementById('swal-substitute').value.trim();
+          if (!timeOut || !reason || !substitute) { Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน'); return false; }
+          if (!pad || !pad.hasInk()) { Swal.showValidationMessage('กรุณาลงลายเซ็นบนหน้าจอก่อนยืนยัน'); return false; }
+          return {
+            uid: currentUser.id,
+            name: currentUser.name,
+            position: currentUser.position || '',
+            dept: currentUser.dept || '',
+            timeOut: timeOut,
+            reason: reason,
+            substitute: substitute,
+            signature: pad.toDataURL()
+          };
         }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'กำลังบันทึกและแจ้งเตือน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-          
-          fetchAPI('processLeaveSchool', result.value).then(res => {
-            if(res && res.ok) {
-              Swal.fire('สำเร็จ!', 'บันทึกข้อมูลและส่งแจ้งเตือนผ่าน Telegram เรียบร้อยแล้ว', 'success');
-              const badgeOutschool = document.getElementById('statusBadgeOutschool');
-              if(badgeOutschool) {
-                 badgeOutschool.innerHTML = '<i data-lucide="check" size="16"></i> <span>บันทึกแล้ว</span>';
-                 badgeOutschool.classList.remove('empty');
-                 badgeOutschool.classList.add('leave');
-              }
-              fetchLatestData();
-            } else {
-              Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+      }).then(function (result) {
+        if (!result.isConfirmed) return;
+        Swal.fire({ title: 'กำลังบันทึกและแจ้งเตือน...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+        fetchAPI('createOutPermission', result.value).then(function (res) {
+          if (res && res.ok) {
+            Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message, confirmButtonColor: '#0f766e' });
+            const badgeOutschool = document.getElementById('statusBadgeOutschool');
+            if (badgeOutschool) {
+              badgeOutschool.innerHTML = '<i data-lucide="check" size="16"></i> <span>ส่งคำขอแล้ว</span>';
+              badgeOutschool.classList.remove('empty');
+              badgeOutschool.classList.add('leave');
+              if (window.lucide) lucide.createIcons();
             }
-          }).catch(err => {
-             Swal.fire('ผิดพลาด', err.toString(), 'error');
-          });
-        }
+            fetchLatestData();
+          } else {
+            Swal.fire('ผิดพลาด', (res && res.message) || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+          }
+        }).catch(function (err) {
+          Swal.fire('ผิดพลาด', err && err.message ? err.message : String(err), 'error');
+        });
       });
+    }
+
+    // ---------- ฝั่ง Admin: รายการคำขอ / เสนอผู้บริหาร / เอกสาร A4 ----------
+    function loadOutPermissions() {
+      const body = document.getElementById('adminPermissionBody');
+      if (body) body.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;"><div class="spinner" style="margin:0 auto; width:30px; height:30px; border-width:3px;"></div></td></tr>';
+      fetchAPI('getOutPermissions', {})
+        .then(function (res) {
+          outPermissionRecords = (res && res.records) ? res.records : [];
+          renderOutPermissionTable();
+        })
+        .catch(function (err) {
+          if (body) body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">โหลดข้อมูลไม่สำเร็จ: ' + escapeHtml(err && err.message ? err.message : String(err)) + '</td></tr>';
+        });
+    }
+
+    function renderOutPermissionTable() {
+      const body = document.getElementById('adminPermissionBody');
+      if (!body) return;
+      if (!outPermissionRecords.length) {
+        body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ยังไม่มีคำขอออกนอกบริเวณ</td></tr>';
+        return;
+      }
+      let html = '';
+      outPermissionRecords.forEach(function (r, i) {
+        const action = r.status === 'รออนุมัติ'
+          ? '<button onclick="openOutPermissionReview(\'' + r.id + '\')" style="background:#0f766e; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="send" size="12"></i> เสนอผู้บริหาร</button>'
+          : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAt || '-') + '</span>';
+        const approver = r.status === 'รออนุมัติ'
+          ? '-'
+          : escapeHtml(r.approverPosition || '-') + (r.approverName ? '<br><span style="color:#475569;">' + escapeHtml(r.approverName) + '</span>' : '') + (r.comment ? '<br><span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>' : '');
+        html += '<tr>'
+          + '<td>' + (i + 1) + '</td>'
+          + '<td style="text-align:left; font-weight:700;">' + escapeHtml(r.id) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.at) + '</span></td>'
+          + '<td style="text-align:left;">' + escapeHtml(r.name) + '<br><span style="font-size:0.75rem; color:#64748b; font-weight:500;">' + escapeHtml(r.dept || r.position || '-') + '</span></td>'
+          + '<td>' + escapeHtml(r.timeOut) + ' น.</td>'
+          + '<td style="text-align:left; font-size:0.85rem;">' + escapeHtml(r.reason) + '<br><span style="color:#64748b; font-size:0.75rem;">ผู้แทน: ' + escapeHtml(r.substitute) + '</span></td>'
+          + '<td>' + permStatusBadge(r.status) + '</td>'
+          + '<td style="font-size:0.8rem;">' + approver + '</td>'
+          + '<td>' + action + '</td>'
+          + '</tr>';
+      });
+      body.innerHTML = html;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openOutPermissionReview(id) {
+      const rec = (outPermissionRecords || []).find(function (r) { return r.id === id; });
+      if (!rec) return Swal.fire('ผิดพลาด', 'ไม่พบข้อมูลคำขอ', 'error');
+      if (rec.status !== 'รออนุมัติ') return Swal.fire('แจ้งเตือน', 'คำขอนี้ได้รับการพิจารณาแล้ว', 'info');
+
+      let pad = null;
+      Swal.fire({
+        title: 'เสนอผู้บริหารพิจารณา',
+        width: '640px',
+        html: `
+          <div style="text-align:left; font-size:0.9rem;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; font-size:0.85rem; color:#334155; margin-bottom:6px;">
+              <div style="font-weight:800; margin-bottom:4px;">${escapeHtml(rec.id)} • ${escapeHtml(rec.name)}</div>
+              <div>เวลาออก: <b>${escapeHtml(rec.timeOut)} น.</b> • ${escapeHtml(rec.dateText)}</div>
+              <div style="margin-top:4px;">รายการ: ${escapeHtml(rec.reason)}</div>
+              <div style="color:#64748b; margin-top:2px;">ผู้ปฏิบัติงานแทน: ${escapeHtml(rec.substitute)}</div>
+            </div>
+            <label class="perm-form-label">ชื่อผู้บริหาร (สำหรับเอกสาร) <span style="color:#ef4444;">*</span></label>
+            <select id="review-approver-name" class="perm-form-input">
+              <option value="">เลือกชื่อผู้บริหาร</option>
+              <option value="นายมุคลิส คอลออาแซ">นายมุคลิส คอลออาแซ</option>
+              <option value="นางสารีน๊ะ ดอปอ">นางสารีน๊ะ ดอปอ</option>
+            </select>
+            <label class="perm-form-label">ตำแหน่งผู้บริหาร <span style="color:#ef4444;">*</span></label>
+            <select id="review-position" class="perm-form-input">
+              <option value="">เลือกตำแหน่งผู้บริหาร</option>
+              <option value="รองผู้อำนวยการโรงเรียนบ้านรามัน">รองผู้อำนวยการโรงเรียนบ้านรามัน</option>
+              <option value="ผู้อำนวยการโรงเรียนบ้านรามัน">ผู้อำนวยการโรงเรียนบ้านรามัน</option>
+            </select>
+            <label class="perm-form-label">ผลการพิจารณา <span style="color:#ef4444;">*</span></label>
+            <div class="decision-options">
+              <label class="decision-option is-checked"><input type="radio" name="review-decision" value="อนุญาต" checked> อนุญาต</label>
+              <label class="decision-option"><input type="radio" name="review-decision" value="ไม่อนุญาต"> ไม่อนุญาต</label>
+            </div>
+            <label class="perm-form-label">ความคิดเห็นผู้บริหาร</label>
+            <textarea id="review-comment" class="swal-perm-textarea" placeholder="ระบุความคิดเห็น / เหตุผลประกอบการพิจารณา"></textarea>
+            <label class="perm-form-label">ลายเซ็นผู้บริหาร <span style="color:#ef4444;">*</span></label>
+            <div class="signature-box">
+              <canvas id="review-sign-canvas" class="signature-canvas"></canvas>
+              <div class="signature-tools"><span>เซ็นชื่อด้วยนิ้วหรือเมาส์ในกรอบ</span><button type="button" class="signature-clear" id="review-sign-clear">ล้างลายเซ็น</button></div>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันผลการพิจารณา',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#0f766e',
+        didOpen: function () {
+          pad = initSignaturePad('review-sign-canvas');
+          const clearBtn = document.getElementById('review-sign-clear');
+          if (clearBtn && pad) clearBtn.addEventListener('click', pad.clear);
+          document.querySelectorAll('input[name="review-decision"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+              document.querySelectorAll('.decision-option').forEach(function (el) { el.classList.remove('is-checked'); });
+              const option = input.closest('.decision-option');
+              if (option) option.classList.add('is-checked');
+            });
+          });
+        },
+        preConfirm: function () {
+          const approverPosition = document.getElementById('review-position').value;
+          const approverName = document.getElementById('review-approver-name').value.trim();
+          const decisionEl = document.querySelector('input[name="review-decision"]:checked');
+          const decision = decisionEl ? decisionEl.value : '';
+          const comment = document.getElementById('review-comment').value.trim();
+          if (!approverName) { Swal.showValidationMessage('กรุณาเลือกชื่อผู้บริหาร'); return false; }
+          if (!approverPosition) { Swal.showValidationMessage('กรุณาเลือกตำแหน่งผู้บริหาร'); return false; }
+          if (!decision) { Swal.showValidationMessage('กรุณาเลือกผลการพิจารณา'); return false; }
+          if (decision === 'ไม่อนุญาต' && !comment) { Swal.showValidationMessage('กรุณาระบุเหตุผลที่ไม่อนุญาต'); return false; }
+          if (!pad || !pad.hasInk()) { Swal.showValidationMessage('กรุณาลงลายเซ็นผู้บริหารก่อนยืนยัน'); return false; }
+          return {
+            id: rec.id,
+            approverPosition: approverPosition,
+            approverName: approverName,
+            decision: decision,
+            comment: comment,
+            signature: pad.toDataURL()
+          };
+        }
+      }).then(function (result) {
+        if (!result.isConfirmed) return;
+        Swal.fire({ title: 'กำลังบันทึกผลการพิจารณา...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+        fetchAPI('reviewOutPermission', result.value).then(function (res) {
+          if (res && res.ok) {
+            Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message, confirmButtonColor: '#0f766e' });
+            loadOutPermissions();
+          } else {
+            Swal.fire('ผิดพลาด', (res && res.message) || 'ไม่สามารถบันทึกผลได้', 'error');
+          }
+        }).catch(function (err) {
+          Swal.fire('ผิดพลาด', err && err.message ? err.message : String(err), 'error');
+        });
+      });
+    }
+
+    function printOutPermissionDocs() {
+      Swal.fire({ title: 'กำลังเตรียมเอกสาร...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+      fetchAPI('getOutPermissions', { includeSignatures: true }).then(function (res) {
+        Swal.close();
+        const records = (res && res.records) ? res.records.slice() : [];
+        if (!records.length) return Swal.fire('ไม่มีข้อมูล', 'ยังไม่มีคำขอออกนอกบริเวณ', 'info');
+        records.sort(function (a, b) { return String(a.id).localeCompare(String(b.id)); });
+        openPrintWindow(buildOutPermissionDocsHtml(records));
+      }).catch(function (err) {
+        Swal.fire('ผิดพลาด', err && err.message ? err.message : String(err), 'error');
+      });
+    }
+
+    function buildOutPermissionDocsHtml(records) {
+      const school = escapeHtml((sysConfig && sysConfig.orgName) ? sysConfig.orgName : 'โรงเรียนบ้านรามัน');
+      const docs = records.map(function (r) {
+        const statusClass = r.status === 'อนุญาต' ? 'ok' : (r.status === 'ไม่อนุญาต' ? 'no' : 'wait');
+        const sig = r.signature
+          ? '<img class="op-sig" src="' + r.signature + '" alt="ลายเซ็นผู้ขอ">'
+          : '<div class="op-sig-empty">ยังไม่ได้ลงลายเซ็น</div>';
+        const adminSig = r.approverSignature
+          ? '<img class="op-sig" src="' + r.approverSignature + '" alt="ลายเซ็นผู้บริหาร">'
+          : '<div class="op-sig-empty">&nbsp;</div>';
+        return '<section class="op-doc">'
+          + '<div class="op-head">'
+          + '<div class="op-school">' + school + '</div>'
+          + '<div class="op-title">แบบขออนุญาตออกนอกบริเวณโรงเรียน</div>'
+          + '<div class="op-meta">เลขที่ ' + escapeHtml(r.id) + ' • วันที่ ' + escapeHtml(r.dateText) + '</div>'
+          + '</div>'
+          + '<table class="op-table">'
+          + '<tr><td class="op-lbl">ชื่อผู้ขอ</td><td>' + escapeHtml(r.name) + '</td><td class="op-lbl">ตำแหน่ง</td><td>' + escapeHtml(r.position || '-') + '</td></tr>'
+          + '<tr><td class="op-lbl">แผนก</td><td>' + escapeHtml(r.dept || '-') + '</td><td class="op-lbl">เวลาที่ขอออก</td><td>' + escapeHtml(r.timeOut) + ' น.</td></tr>'
+          + '<tr><td class="op-lbl">รายการ / เหตุผล</td><td colspan="3">' + escapeHtml(r.reason) + '</td></tr>'
+          + '<tr><td class="op-lbl">ผู้ปฏิบัติงานแทน</td><td colspan="3">' + escapeHtml(r.substitute) + '</td></tr>'
+          + '</table>'
+          + '<table class="op-sign-table"><tr>'
+          + '<td class="op-sign-cell">'
+          + '<div class="op-sign-title">ลงชื่อผู้ขออนุญาต</div>'
+          + sig
+          + '<div class="op-sign-name">(' + escapeHtml(r.name) + ')</div>'
+          + '<div class="op-sign-date">แจ้งเมื่อ ' + escapeHtml(r.at) + '</div>'
+          + '</td>'
+          + '<td class="op-sign-cell">'
+          + '<div class="op-sign-title">ผลการพิจารณา: <span class="op-status ' + statusClass + '">' + escapeHtml(r.status) + '</span></div>'
+          + '<div class="op-comment">ความคิดเห็น: ' + escapeHtml(r.comment || '-') + '</div>'
+          + adminSig
+          + '<div class="op-sign-name">(' + escapeHtml(r.approverName || '-') + ')</div>'
+          + '<div class="op-sign-position">' + escapeHtml(r.approverPosition || '-') + '</div>'
+          + '<div class="op-sign-date">' + escapeHtml(r.reviewedAt || '') + '</div>'
+          + '</td>'
+          + '</tr></table>'
+          + '</section>';
+      }).join('');
+      return '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>แบบขออนุญาตออกนอกบริเวณโรงเรียน</title>'
+        + '<style>@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap");'
+        + '* { box-sizing: border-box; font-family: "Sarabun", sans-serif; }'
+        + 'body { margin: 0; padding: 10mm; background: #fff; color: #111827; }'
+        + '.op-doc { border: 1.5px solid #111827; border-radius: 2mm; padding: 6mm 7mm; margin-bottom: 7mm; page-break-inside: avoid; break-inside: avoid; }'
+        + '.op-head { text-align: center; margin-bottom: 4mm; }'
+        + '.op-school { font-weight: 700; font-size: 13pt; }'
+        + '.op-title { font-weight: 700; font-size: 16pt; margin: 1mm 0; }'
+        + '.op-meta { font-size: 10pt; color: #374151; }'
+        + '.op-table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }'
+        + '.op-table td { border: 1px solid #9ca3af; padding: 2.4mm 3mm; vertical-align: top; }'
+        + '.op-lbl { background: #f3f4f6; font-weight: 700; width: 26mm; white-space: nowrap; }'
+        + '.op-sign-table { width: 100%; border-collapse: collapse; margin-top: 3mm; }'
+        + '.op-sign-cell { width: 50%; border: 1px solid #9ca3af; padding: 3mm; vertical-align: top; font-size: 10pt; }'
+        + '.op-sign-title { font-weight: 700; margin-bottom: 2mm; }'
+        + '.op-sig { display: block; height: 20mm; max-width: 100%; object-fit: contain; margin: 1mm auto; }'
+        + '.op-sig-empty { height: 20mm; }'
+        + '.op-sign-name { text-align: center; margin-top: 1mm; }'
+        + '.op-sign-position, .op-sign-date { text-align: center; font-size: 9.5pt; color: #374151; }'
+        + '.op-comment { min-height: 8mm; margin-bottom: 1mm; }'
+        + '.op-status { font-weight: 700; }'
+        + '.op-status.ok { color: #047857; } .op-status.no { color: #b91c1c; } .op-status.wait { color: #b45309; }'
+        + '@page { size: A4 portrait; margin: 8mm; }'
+        + '@media print { body { padding: 0; } .op-doc { margin-bottom: 6mm; } }'
+        + '</style></head><body>' + docs + '</body></html>';
     }
 
     function openRegisterModal() { document.getElementById('regModal').style.display = 'flex'; }
