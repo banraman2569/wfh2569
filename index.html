@@ -184,8 +184,12 @@
     .action-btn.official .status-badge { color: #6d28d9; font-family: 'Sarabun'; }
     .action-btn.outschool { background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); }
     .action-btn.outschool .status-badge { color: #0f766e; font-family: 'Sarabun'; }
-    .action-btn.approve { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
-    .action-btn.approve .status-badge { color: #1e40af; font-family: 'Sarabun'; }
+    .approve-card { display: none; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-top: 20px; padding: 13px 15px; border: none; border-radius: 16px; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); color: #fff; cursor: pointer; box-shadow: 0 8px 18px rgba(30, 58, 138, 0.25); transition: 0.25s; text-align: left; }
+    .approve-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(30, 58, 138, 0.3); }
+    .approve-card-left { display: flex; align-items: center; gap: 10px; }
+    .approve-card-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.18); flex-shrink: 0; }
+    .approve-card h4 { font-size: 0.95rem; font-weight: 800; margin: 0; color: #fff; }
+    .approve-card p { font-size: 0.72rem; margin: 2px 0 0; color: rgba(255,255,255,0.85); font-weight: 600; }
     .action-btn.latereport { background: linear-gradient(135deg, #fb7185 0%, #be123c 100%); }
     .action-btn.latereport .status-badge { color: #be123c; font-family: 'Sarabun'; }
 
@@ -744,6 +748,17 @@
               </h3>
               <div class="profile-dept"><i data-lucide="briefcase" size="14"></i> <span id="profileDept">ตำแหน่ง • แผนก</span></div>
 
+              <div id="approveOutPermissionBtn" class="approve-card" style="display:none;" onclick="openApproverPanel()">
+                <div class="approve-card-left">
+                  <div class="approve-card-icon"><i data-lucide="file-signature" size="20"></i></div>
+                  <div>
+                    <h4>อนุมัติออกนอกบริเวณ</h4>
+                    <p>สำหรับผู้บริหาร (rm1, rm2)</p>
+                  </div>
+                </div>
+                <i data-lucide="chevron-right" size="20"></i>
+              </div>
+
               <div class="gps-box" id="gpsBox">
                 <div class="gps-info-container">
                   <div class="gps-text" id="gpsStatusText"><i data-lucide="map-pin" size="16"></i> กำลังค้นหาพิกัด...</div>
@@ -799,11 +814,6 @@
             <div class="action-btn outschool" onclick="handleLeaveSchool()">
               <div class="action-left"><div class="action-icon"><i data-lucide="map" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">ขออนุญาตออกนอกบริเวณโรงเรียน</h4><div class="action-subtitle"><i data-lucide="file-text" size="14"></i> ระบุเหตุผลและผู้แทน</div></div></div>
               <div class="status-badge empty" id="statusBadgeOutschool"><i data-lucide="edit-3" size="18"></i> <span>กรอกข้อมูล</span></div>
-            </div>
-
-            <div class="action-btn approve" id="approveOutPermissionBtn" style="display:none;" onclick="openApproverPanel()">
-              <div class="action-left"><div class="action-icon"><i data-lucide="file-signature" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">อนุมัติออกนอกบริเวณ</h4><div class="action-subtitle"><i data-lucide="shield-check" size="14"></i> สำหรับผู้บริหาร (rm1, rm2)</div></div></div>
-              <div class="status-badge" style="background:#e0f2fe; color:#0369a1;"><i data-lucide="chevron-right" size="18"></i></div>
             </div>
           </div>
 
