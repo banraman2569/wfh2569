@@ -193,7 +193,7 @@
     .action-btn.latereport { background: linear-gradient(135deg, #fb7185 0%, #be123c 100%); }
     .action-btn.latereport .status-badge { color: #be123c; font-family: 'Sarabun'; }
 
-    /* แผงอนุมัติออกนอกบริเวณ (สำหรับผู้บริหาร) */
+    /* แผงอนุญาตออกนอกบริเวณ (สำหรับผู้บริหาร) */
     .approver-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(8px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
     .approver-overlay.show { display: flex; }
     .approver-card { background: #fff; border-radius: 20px; width: 100%; max-width: 1080px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; }
@@ -763,7 +763,7 @@
                 <div class="approve-card-left">
                   <div class="approve-card-icon"><i data-lucide="file-signature" size="20"></i></div>
                   <div>
-                    <h4>อนุมัติออกนอกบริเวณ</h4>
+                    <h4>อนุญาตออกนอกบริเวณ</h4>
                     <p>สำหรับผู้บริหาร</p>
                   </div>
                 </div>
@@ -842,7 +842,7 @@
     <div id="approverPanel" class="approver-overlay" onclick="if (event.target === this) closeApproverPanel();">
       <div class="approver-card">
         <div class="approver-head">
-          <h2><i data-lucide="file-signature" style="color:#0f766e;"></i> อนุมัติออกนอกบริเวณโรงเรียน</h2>
+          <h2><i data-lucide="file-signature" style="color:#0f766e;"></i> อนุญาตออกนอกบริเวณโรงเรียน</h2>
           <button class="approver-close" onclick="closeApproverPanel()" title="ปิด"><i data-lucide="x" size="18"></i></button>
         </div>
         <div class="approver-tools">
@@ -905,7 +905,7 @@
             </li>
             <li>
               <a id="menu-permission" class="menu-item" onclick="switchAdminMenu('permission')">
-                <i data-lucide="file-signature"></i> <span>อนุมัติออกนอกบริเวณ</span>
+                <i data-lucide="file-signature"></i> <span>อนุญาตออกนอกบริเวณ</span>
               </a>
             </li>
             <li>
@@ -1099,7 +1099,7 @@
             <div class="admin-header-title-wrapper">
               <button class="mobile-menu-btn" onclick="toggleAdminSidebar()"><i data-lucide="menu"></i></button>
               <div class="admin-header-title">
-                <h1>อนุมัติออกนอกบริเวณโรงเรียน</h1>
+                <h1>อนุญาตออกนอกบริเวณโรงเรียน</h1>
                 <p>พิจารณาคำขอและจัดเก็บเอกสารขนาด A4</p>
               </div>
             </div>
@@ -2171,7 +2171,7 @@
     }
     
     // ==========================================
-    // คำขออนุญาตออกนอกบริเวณโรงเรียน (ลายเซ็นบนจอ + อนุมัติ + เอกสาร A4)
+    // คำขออนุญาตออกนอกบริเวณโรงเรียน (ลายเซ็นบนจอ + อนุญาต + เอกสาร A4)
     // ==========================================
     function initSignaturePad(canvasId) {
       const canvas = document.getElementById(canvasId);
@@ -2218,7 +2218,7 @@
       const s = String(status || '');
       if (s === 'อนุญาต') return '<span class="perm-status approved"><i data-lucide="check-circle" size="12"></i> อนุญาต</span>';
       if (s === 'ไม่อนุญาต') return '<span class="perm-status rejected"><i data-lucide="x-circle" size="12"></i> ไม่อนุญาต</span>';
-      return '<span class="perm-status pending"><i data-lucide="clock" size="12"></i> รออนุมัติ</span>';
+      return '<span class="perm-status pending"><i data-lucide="clock" size="12"></i> รออนุญาต</span>';
     }
 
     function buildMyPermissionHistoryHtml(records, stats) {
@@ -2227,7 +2227,7 @@
         + '<div class="perm-my-stat"><b>' + Number(st.total || 0) + '</b><span>ครั้งที่ขอทั้งหมด</span></div>'
         + '<div class="perm-my-stat"><b>' + Number(st.approved || 0) + '</b><span>อนุญาต</span></div>'
         + '<div class="perm-my-stat"><b>' + Number(st.rejected || 0) + '</b><span>ไม่อนุญาต</span></div>'
-        + '<div class="perm-my-stat"><b>' + Number(st.pending || 0) + '</b><span>รออนุมัติ</span></div>'
+        + '<div class="perm-my-stat"><b>' + Number(st.pending || 0) + '</b><span>รออนุญาต</span></div>'
         + '</div>';
       if (!records || !records.length) {
         return html + '<div class="perm-history-title">ยังไม่มีประวัติการขอออกนอกบริเวณ</div>';
@@ -2386,7 +2386,7 @@
       const counts = Object.keys(outPermissionUserCounts).map(function (k) { return outPermissionUserCounts[k]; })
         .filter(function (c) { return c && c.total > 0; });
       counts.forEach(function (c) {
-        html += '<span class="perm-stat-chip" title="อนุญาต ' + Number(c.approved || 0) + ' • ไม่อนุญาต ' + Number(c.rejected || 0) + ' • รออนุมัติ ' + Number(c.pending || 0) + '">'
+        html += '<span class="perm-stat-chip" title="อนุญาต ' + Number(c.approved || 0) + ' • ไม่อนุญาต ' + Number(c.rejected || 0) + ' • รออนุญาต ' + Number(c.pending || 0) + '">'
           + '<i data-lucide="user" size="13"></i> ' + escapeHtml(c.name || c.uid || '-') + ' <b>' + Number(c.total) + '</b> ครั้ง</span>';
       });
       ['adminPermStats', 'approverPermStats'].forEach(function (id) {
@@ -2404,11 +2404,11 @@
         html = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ยังไม่มีคำขอออกนอกบริเวณ</td></tr>';
       } else {
         outPermissionRecords.forEach(function (r, i) {
-          const action = r.status === 'รออนุมัติ'
+          const action = r.status === 'รออนุญาต'
             ? '<button onclick="openOutPermissionReview(\'' + r.id + '\')" style="background:#0f766e; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="send" size="12"></i> เสนอผู้บริหาร</button>'
             : '<span style="font-size:0.78rem; color:#64748b;">' + escapeHtml(r.reviewedAtText || r.reviewedAt || '-') + '</span>';
           const approverParts = [];
-          if (r.status !== 'รออนุมัติ') {
+          if (r.status !== 'รออนุญาต') {
             if (r.approverName) approverParts.push('<b>' + escapeHtml(r.approverName) + '</b>');
             if (r.approverPosition) approverParts.push('<span style="color:#475569;">' + escapeHtml(r.approverPosition) + '</span>');
             if (r.comment) approverParts.push('<span style="color:#64748b;">' + escapeHtml(r.comment) + '</span>');
@@ -2443,7 +2443,7 @@
 
     function openApproverPanel() {
       if (!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
-      if (!canApproveOutPermission()) return Swal.fire('ไม่มีสิทธิ์', 'บัญชีนี้ไม่มีสิทธิ์อนุมัติออกนอกบริเวณ', 'error');
+      if (!canApproveOutPermission()) return Swal.fire('ไม่มีสิทธิ์', 'บัญชีนี้ไม่มีสิทธิ์อนุญาตออกนอกบริเวณ', 'error');
       const panel = document.getElementById('approverPanel');
       if (!panel) return;
       panel.classList.add('show');
@@ -2461,7 +2461,7 @@
     function openOutPermissionReview(id) {
       const rec = (outPermissionRecords || []).find(function (r) { return r.id === id; });
       if (!rec) return Swal.fire('ผิดพลาด', 'ไม่พบข้อมูลคำขอ', 'error');
-      if (rec.status !== 'รออนุมัติ') return Swal.fire('แจ้งเตือน', 'คำขอนี้ได้รับการพิจารณาแล้ว', 'info');
+      if (rec.status !== 'รออนุญาต') return Swal.fire('แจ้งเตือน', 'คำขอนี้ได้รับการพิจารณาแล้ว', 'info');
 
       let pad = null;
       Swal.fire({
@@ -2484,8 +2484,8 @@
             <label class="perm-form-label">ตำแหน่งผู้บริหาร <span style="color:#ef4444;">*</span></label>
             <select id="review-position" class="perm-form-input">
               <option value="">เลือกตำแหน่งผู้บริหาร</option>
-              <option value="รองผู้อำนวยการโรงเรียนบ้านรามัน">รองผู้อำนวยการโรงเรียนบ้านรามัน</option>
               <option value="ผู้อำนวยการโรงเรียนบ้านรามัน">ผู้อำนวยการโรงเรียนบ้านรามัน</option>
+              <option value="รองผู้อำนวยการโรงเรียนบ้านรามัน">รองผู้อำนวยการโรงเรียนบ้านรามัน</option>
             </select>
             <label class="perm-form-label">ผลการพิจารณา <span style="color:#ef4444;">*</span></label>
             <div class="decision-options">
